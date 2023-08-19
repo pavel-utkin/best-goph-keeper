@@ -1,4 +1,4 @@
-package server
+package main
 
 import (
 	"best-goph-keeper/internal/api/server"

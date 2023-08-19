@@ -10,12 +10,7 @@ type User struct {
 	DeletedAt time.Time
 }
 
-type LoginRequest struct {
-	Username string
-	Password string
-}
-
-type RegistrationRequest struct {
+type UserRequest struct {
 	Username string
 	Password string
 }
