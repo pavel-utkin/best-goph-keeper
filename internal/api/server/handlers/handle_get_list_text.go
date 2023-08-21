@@ -8,6 +8,6 @@ import (
 
 // HandleGetListText - get list text
 func (h *Handler) HandleGetListText(ctx context.Context, req *grpc.GetListTextRequest) (*grpc.GetListTextResponse, error) {
-	var resp string
-	return &grpc.GetListTextResponse{Resp: resp}, nil
+	var msg string
+	return &grpc.GetListTextResponse{Message: msg}, nil
 }

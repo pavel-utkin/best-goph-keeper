@@ -5,6 +5,7 @@ import (
 	configserver "best-goph-keeper/internal/api/server/config"
 	grpcHandler "best-goph-keeper/internal/api/server/handlers"
 	"best-goph-keeper/internal/database"
+	"best-goph-keeper/internal/storage/repositories/text"
 	"best-goph-keeper/internal/storage/repositories/user"
 	"context"
 	"github.com/sirupsen/logrus"
@@ -25,11 +26,12 @@ func main() {
 	}
 
 	userRepository := user.New(db)
+	textRepository := text.New(db)
 
 	ctx, cnl := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 	defer cnl()
 
-	handlerGrpc := grpcHandler.NewHandler(db, userRepository, logger)
+	handlerGrpc := grpcHandler.NewHandler(db, userRepository, textRepository, logger)
 	go server.StartService(handlerGrpc, config, logger)
 
 	<-ctx.Done()

@@ -22,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GophkeeperClient interface {
-	HandleLogin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	HandleAuthentication(ctx context.Context, in *AuthenticationRequest, opts ...grpc.CallOption) (*AuthenticationResponse, error)
 	HandleRegistration(ctx context.Context, in *RegistrationRequest, opts ...grpc.CallOption) (*RegistrationResponse, error)
 	HandleCreateText(ctx context.Context, in *CreateTextRequest, opts ...grpc.CallOption) (*CreateTextResponse, error)
 	HandleGetListText(ctx context.Context, in *GetListTextRequest, opts ...grpc.CallOption) (*GetListTextResponse, error)
@@ -38,9 +38,9 @@ func NewGophkeeperClient(cc grpc.ClientConnInterface) GophkeeperClient {
 	return &gophkeeperClient{cc}
 }
 
-func (c *gophkeeperClient) HandleLogin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
-	out := new(LoginResponse)
-	err := c.cc.Invoke(ctx, "/api.Gophkeeper/HandleLogin", in, out, opts...)
+func (c *gophkeeperClient) HandleAuthentication(ctx context.Context, in *AuthenticationRequest, opts ...grpc.CallOption) (*AuthenticationResponse, error) {
+	out := new(AuthenticationResponse)
+	err := c.cc.Invoke(ctx, "/api.Gophkeeper/HandleAuthentication", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +96,7 @@ func (c *gophkeeperClient) HandlePing(ctx context.Context, in *PingRequest, opts
 // All implementations must embed UnimplementedGophkeeperServer
 // for forward compatibility
 type GophkeeperServer interface {
-	HandleLogin(context.Context, *LoginRequest) (*LoginResponse, error)
+	HandleAuthentication(context.Context, *AuthenticationRequest) (*AuthenticationResponse, error)
 	HandleRegistration(context.Context, *RegistrationRequest) (*RegistrationResponse, error)
 	HandleCreateText(context.Context, *CreateTextRequest) (*CreateTextResponse, error)
 	HandleGetListText(context.Context, *GetListTextRequest) (*GetListTextResponse, error)
@@ -109,8 +109,8 @@ type GophkeeperServer interface {
 type UnimplementedGophkeeperServer struct {
 }
 
-func (UnimplementedGophkeeperServer) HandleLogin(context.Context, *LoginRequest) (*LoginResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method HandleLogin not implemented")
+func (UnimplementedGophkeeperServer) HandleAuthentication(context.Context, *AuthenticationRequest) (*AuthenticationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HandleAuthentication not implemented")
 }
 func (UnimplementedGophkeeperServer) HandleRegistration(context.Context, *RegistrationRequest) (*RegistrationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HandleRegistration not implemented")
@@ -140,20 +140,20 @@ func RegisterGophkeeperServer(s grpc.ServiceRegistrar, srv GophkeeperServer) {
 	s.RegisterService(&Gophkeeper_ServiceDesc, srv)
 }
 
-func _Gophkeeper_HandleLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoginRequest)
+func _Gophkeeper_HandleAuthentication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthenticationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GophkeeperServer).HandleLogin(ctx, in)
+		return srv.(GophkeeperServer).HandleAuthentication(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Gophkeeper/HandleLogin",
+		FullMethod: "/api.Gophkeeper/HandleAuthentication",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GophkeeperServer).HandleLogin(ctx, req.(*LoginRequest))
+		return srv.(GophkeeperServer).HandleAuthentication(ctx, req.(*AuthenticationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -256,8 +256,8 @@ var Gophkeeper_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*GophkeeperServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "HandleLogin",
-			Handler:    _Gophkeeper_HandleLogin_Handler,
+			MethodName: "HandleAuthentication",
+			Handler:    _Gophkeeper_HandleAuthentication_Handler,
 		},
 		{
 			MethodName: "HandleRegistration",

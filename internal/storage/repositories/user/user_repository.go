@@ -3,6 +3,8 @@ package user
 import (
 	"best-goph-keeper/internal/database"
 	"best-goph-keeper/internal/model"
+	"best-goph-keeper/internal/storage/errors"
+	"database/sql"
 	"time"
 )
 
@@ -22,27 +24,34 @@ func New(db *database.DB) *User {
 	}
 }
 
-func (u *User) Registration(user *model.UserRequest) (int, error) {
-	var id int
+func (u *User) Registration(user *model.UserRequest) (*model.User, error) {
+	registeredUser := &model.User{}
 	if err := u.db.Pool.QueryRow(
-		"INSERT INTO users (username, password, created_at) VALUES ($1, $2, $3) RETURNING user_id",
+		"INSERT INTO users (username, password, created_at) VALUES ($1, $2, $3) RETURNING user_id, username",
 		user.Username,
 		user.Password,
 		time.Now(),
-	).Scan(&id); err != nil {
-		return id, err
+	).Scan(&registeredUser.ID, &registeredUser.Username); err != nil {
+		return nil, err
 	}
-
-	return id, nil
+	return registeredUser, nil
 }
 
-func (u *User) Authentication(user *model.UserRequest) (bool, error) {
-	var authentication bool
-	row := u.db.Pool.QueryRow("SELECT EXISTS(SELECT 1 FROM users where username = $1 AND password = $2)", user.Username, user.Password)
-	if err := row.Scan(&authentication); err != nil {
-		return authentication, err
+func (u *User) Authentication(userRequest *model.UserRequest) (*model.User, error) {
+	authenticatedUser := &model.User{}
+	err := u.db.Pool.QueryRow("SELECT user_id, username FROM users WHERE username=$1 and password=$2",
+		userRequest.Username, userRequest.Password).Scan(
+		&authenticatedUser.ID,
+		&authenticatedUser.Username,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.ErrWrongUsernameOrPassword
+		} else {
+			return nil, err
+		}
 	}
-	return authentication, nil
+	return authenticatedUser, nil
 }
 
 func (u *User) UserExists(user *model.UserRequest) (bool, error) {

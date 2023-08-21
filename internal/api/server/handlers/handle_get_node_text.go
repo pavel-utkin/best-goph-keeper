@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"best-goph-keeper/internal/model"
 	"context"
 
 	grpc "best-goph-keeper/internal/api/proto"
@@ -8,6 +9,13 @@ import (
 
 // HandleGetNodeText - get node text
 func (h *Handler) HandleGetNodeText(ctx context.Context, req *grpc.GetNodeTextRequest) (*grpc.GetNodeTextResponse, error) {
-	var resp string
-	return &grpc.GetNodeTextResponse{Resp: resp}, nil
+	TextData := &model.GetNodeTextRequest{}
+	TextData.TextId = req.TextId
+	GetNodeText, err := h.text.GetNodeText(TextData)
+	if err != nil {
+		h.logger.Error(err)
+		return &grpc.GetNodeTextResponse{}, err
+	}
+	h.logger.Debug(GetNodeText)
+	return &grpc.GetNodeTextResponse{TextId: GetNodeText.ID, Text: GetNodeText.Text}, nil
 }
