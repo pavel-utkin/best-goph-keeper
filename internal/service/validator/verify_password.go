@@ -4,7 +4,7 @@ import "unicode"
 
 /*
  * Password rules:
- * at least 7 letters
+ * at least 8 letters
  * at least 1 number
  * at least 1 upper case
  * at least 1 special character
@@ -18,7 +18,7 @@ func VerifyPassword(s string) bool {
 		hasNumber  = false
 		hasSpecial = false
 	)
-	if len(s) >= 7 {
+	if len(s) >= 8 {
 		hasMinLen = true
 	}
 	for _, char := range s {

@@ -11,7 +11,7 @@ import (
 type Constructor interface {
 	Registration(data *model.UserRequest) error
 	Authentication(user *model.UserRequest) (bool, error)
-	UserExists(user *model.UserRequest) (bool, error)
+	UserExists(username string) (bool, error)
 }
 
 type User struct {
@@ -54,9 +54,9 @@ func (u *User) Authentication(userRequest *model.UserRequest) (*model.User, erro
 	return authenticatedUser, nil
 }
 
-func (u *User) UserExists(user *model.UserRequest) (bool, error) {
+func (u *User) UserExists(username string) (bool, error) {
 	var exists bool
-	row := u.db.Pool.QueryRow("SELECT EXISTS(SELECT 1 FROM users where username = $1)", user.Username)
+	row := u.db.Pool.QueryRow("SELECT EXISTS(SELECT 1 FROM users where username = $1)", username)
 	if err := row.Scan(&exists); err != nil {
 		return exists, err
 	}

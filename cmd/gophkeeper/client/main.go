@@ -4,6 +4,7 @@ import (
 	config2 "best-goph-keeper/internal/api/agent/config"
 	grpcClient "best-goph-keeper/internal/api/proto"
 	"best-goph-keeper/internal/model"
+	"best-goph-keeper/internal/service/encryption"
 	"best-goph-keeper/internal/service/randomizer"
 	"context"
 	"github.com/sirupsen/logrus"
@@ -29,30 +30,60 @@ func main() {
 	log.Info(resp.Message)
 
 	username := randomizer.RandStringRunes(10)
-	password := "passworD-123"
+	password := "MyBestPassword-123"
+
+	password, err = encryption.HashPassword(password)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	registeredUser, err := client.HandleRegistration(context.Background(), &grpcClient.RegistrationRequest{Username: username, Password: password})
 	if err != nil {
 		log.Fatal(err)
 	}
-	authenticatedUser, err := client.HandleAuthentication(context.Background(), &grpcClient.AuthenticationRequest{Username: registeredUser.Username, Password: password})
+	authenticatedUser, err := client.HandleAuthentication(context.Background(), &grpcClient.AuthenticationRequest{Username: registeredUser.User.Username, Password: password})
 	if err != nil {
 		log.Fatal(err)
 	}
-	user := model.User{ID: authenticatedUser.UserId, Username: authenticatedUser.Username}
+	user := model.User{ID: authenticatedUser.User.UserId, Username: authenticatedUser.User.Username}
 	log.Info(user)
 
-	randText := randomizer.RandStringRunes(10)
+	randName := randomizer.RandStringRunes(10)
+	plaintext := randomizer.RandStringRunes(10)
 
-	createdText, err := client.HandleCreateText(context.Background(), &grpcClient.CreateTextRequest{UserId: user.ID, Text: randText})
+	secretKey := encryption.AesKeySecureRandom([]byte(password))
+
+	encryptText := encryption.Encrypt(plaintext, secretKey)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Info(createdText)
-	getNodeText, err := client.HandleGetNodeText(context.Background(), &grpcClient.GetNodeTextRequest{TextId: createdText.TextId})
+	createdText, err := client.HandleCreateText(context.Background(),
+		&grpcClient.CreateTextRequest{Key: "Name", Value: randName, Text: []byte(encryptText), AccessToken: authenticatedUser.AccessToken})
 	if err != nil {
 		log.Fatal(err)
 	}
-	text := model.Text{ID: getNodeText.TextId, Text: getNodeText.Text}
-	log.Info(text)
+	log.Info(createdText.Text)
+
+	getNodeText, err := client.HandleGetNodeText(context.Background(), &grpcClient.GetNodeTextRequest{Key: "Name", Value: randName, AccessToken: authenticatedUser.AccessToken})
+	if err != nil {
+		log.Fatal(err)
+	}
+	plaintext = encryption.Decrypt(string(getNodeText.Text.Text), secretKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(plaintext)
+
+	createdText2, err := client.HandleCreateText(context.Background(),
+		&grpcClient.CreateTextRequest{Key: "Name2", Value: randName, Text: []byte(encryptText), AccessToken: authenticatedUser.AccessToken})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(createdText2.Text)
+
+	getListText, err := client.HandleGetListText(context.Background(), &grpcClient.GetListTextRequest{AccessToken: authenticatedUser.AccessToken})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(getListText)
 }
