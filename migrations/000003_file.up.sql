@@ -6,6 +6,6 @@ create table file
     file_path      varchar(200) NOT NULL,
     file_extension varchar(10)  NOT NULL,
     created_at     timestamp    NOT NULL,
-    updated_at     timestamp    NULL,
+    updated_at     timestamp    NOT NULL,
     deleted_at     timestamp NULL
 );

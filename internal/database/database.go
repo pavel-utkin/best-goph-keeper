@@ -1,7 +1,7 @@
 package database
 
 import (
-	"best-goph-keeper/internal/api/server/config"
+	"best-goph-keeper/internal/server/config"
 	"context"
 	"database/sql"
 	_ "github.com/lib/pq"

@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package api;
+
+option go_package = "./gophkeeper";
+
+service Gophkeeper {
+  rpc HandleAuthentication(AuthenticationRequest) returns (AuthenticationResponse) {}
+  rpc HandleRegistration(RegistrationRequest) returns (RegistrationResponse) {}
+  rpc HandleCreateText(CreateTextRequest) returns (CreateTextResponse) {}
+  rpc HandleGetListText(GetListTextRequest) returns (GetListTextResponse) {}
+  rpc HandleGetNodeText(GetNodeTextRequest) returns (GetNodeTextResponse) {}
+  rpc HandlePing(PingRequest) returns (PingResponse) {}
+  rpc HandleUserExist(UserExistRequest) returns (UserExistResponse) {}
+}
+//------------------------------------
+message PingRequest {}
+message PingResponse {
+  string message = 1;
+}
+//------------------------------------
+message Token {
+  int64  userId = 1;
+  string token = 2;
+  google.protobuf.Timestamp createdAt = 3;
+  google.protobuf.Timestamp endDateAt = 4;
+}
+//------------------------------------
+message User {
+  int64 userId = 1;
+  string username = 2;
+  google.protobuf.Timestamp createdAt = 3;
+  google.protobuf.Timestamp updatedAt = 4;
+  google.protobuf.Timestamp deletedAt = 5;
+}
+message AuthenticationRequest {
+  string username = 1;
+  string password = 2;
+}
+message AuthenticationResponse {
+  Token accessToken = 1;
+}
+message RegistrationRequest {
+  string username = 1;
+  string password = 2;
+}
+message RegistrationResponse {
+  Token accessToken = 1;
+}
+message UserExistRequest {
+  string username = 1;
+}
+message UserExistResponse {
+  bool exist = 1;
+}
+//------------------------------------
+message Text {
+  int64  id = 1;
+  int64  userId = 2;
+  string key = 3;
+  string value = 4;
+  bytes text = 5;
+  google.protobuf.Timestamp createdAt = 6;
+  google.protobuf.Timestamp updatedAt = 7;
+  google.protobuf.Timestamp deletedAt = 8;
+}
+message CreateTextRequest {
+  string name = 1;
+  string description = 2;
+  bytes  text = 3;
+  Token accessToken = 4;
+}
+message CreateTextResponse {
+  Text text = 1;
+}
+message GetNodeTextRequest {
+  string name = 1;
+  Token accessToken = 2;
+}
+message GetNodeTextResponse {
+  Text text = 1;
+}
+message GetListTextRequest {
+  Token accessToken = 1;
+}
+message GetListTextResponse {
+  repeated Text node = 1;
+}
+//------------------------------------
+message Metadata {
+  int64  entityId = 1;
+  string key = 2;
+  string value = 3;
+  string type = 4;
+  google.protobuf.Timestamp createdAt = 5;
+  google.protobuf.Timestamp updatedAt = 6;
+  google.protobuf.Timestamp deletedAt = 7;
+}
+//------------------------------------
