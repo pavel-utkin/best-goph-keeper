@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v4.23.4
-// source: internal/api/server/proto/gophkeeper.proto
+// source: internal/server/proto/gophkeeper.proto
 
 package gophkeeper
 
@@ -41,7 +41,7 @@ func NewGophkeeperClient(cc grpc.ClientConnInterface) GophkeeperClient {
 
 func (c *gophkeeperClient) HandleAuthentication(ctx context.Context, in *AuthenticationRequest, opts ...grpc.CallOption) (*AuthenticationResponse, error) {
 	out := new(AuthenticationResponse)
-	err := c.cc.Invoke(ctx, "/api.Gophkeeper/HandleAuthentication", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/server.Gophkeeper/HandleAuthentication", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (c *gophkeeperClient) HandleAuthentication(ctx context.Context, in *Authent
 
 func (c *gophkeeperClient) HandleRegistration(ctx context.Context, in *RegistrationRequest, opts ...grpc.CallOption) (*RegistrationResponse, error) {
 	out := new(RegistrationResponse)
-	err := c.cc.Invoke(ctx, "/api.Gophkeeper/HandleRegistration", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/server.Gophkeeper/HandleRegistration", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (c *gophkeeperClient) HandleRegistration(ctx context.Context, in *Registrat
 
 func (c *gophkeeperClient) HandleCreateText(ctx context.Context, in *CreateTextRequest, opts ...grpc.CallOption) (*CreateTextResponse, error) {
 	out := new(CreateTextResponse)
-	err := c.cc.Invoke(ctx, "/api.Gophkeeper/HandleCreateText", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/server.Gophkeeper/HandleCreateText", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (c *gophkeeperClient) HandleCreateText(ctx context.Context, in *CreateTextR
 
 func (c *gophkeeperClient) HandleGetListText(ctx context.Context, in *GetListTextRequest, opts ...grpc.CallOption) (*GetListTextResponse, error) {
 	out := new(GetListTextResponse)
-	err := c.cc.Invoke(ctx, "/api.Gophkeeper/HandleGetListText", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/server.Gophkeeper/HandleGetListText", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (c *gophkeeperClient) HandleGetListText(ctx context.Context, in *GetListTex
 
 func (c *gophkeeperClient) HandleGetNodeText(ctx context.Context, in *GetNodeTextRequest, opts ...grpc.CallOption) (*GetNodeTextResponse, error) {
 	out := new(GetNodeTextResponse)
-	err := c.cc.Invoke(ctx, "/api.Gophkeeper/HandleGetNodeText", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/server.Gophkeeper/HandleGetNodeText", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (c *gophkeeperClient) HandleGetNodeText(ctx context.Context, in *GetNodeTex
 
 func (c *gophkeeperClient) HandlePing(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error) {
 	out := new(PingResponse)
-	err := c.cc.Invoke(ctx, "/api.Gophkeeper/HandlePing", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/server.Gophkeeper/HandlePing", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +95,7 @@ func (c *gophkeeperClient) HandlePing(ctx context.Context, in *PingRequest, opts
 
 func (c *gophkeeperClient) HandleUserExist(ctx context.Context, in *UserExistRequest, opts ...grpc.CallOption) (*UserExistResponse, error) {
 	out := new(UserExistResponse)
-	err := c.cc.Invoke(ctx, "/api.Gophkeeper/HandleUserExist", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/server.Gophkeeper/HandleUserExist", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -164,7 +164,7 @@ func _Gophkeeper_HandleAuthentication_Handler(srv interface{}, ctx context.Conte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Gophkeeper/HandleAuthentication",
+		FullMethod: "/server.Gophkeeper/HandleAuthentication",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GophkeeperServer).HandleAuthentication(ctx, req.(*AuthenticationRequest))
@@ -182,7 +182,7 @@ func _Gophkeeper_HandleRegistration_Handler(srv interface{}, ctx context.Context
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Gophkeeper/HandleRegistration",
+		FullMethod: "/server.Gophkeeper/HandleRegistration",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GophkeeperServer).HandleRegistration(ctx, req.(*RegistrationRequest))
@@ -200,7 +200,7 @@ func _Gophkeeper_HandleCreateText_Handler(srv interface{}, ctx context.Context, 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Gophkeeper/HandleCreateText",
+		FullMethod: "/server.Gophkeeper/HandleCreateText",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GophkeeperServer).HandleCreateText(ctx, req.(*CreateTextRequest))
@@ -218,7 +218,7 @@ func _Gophkeeper_HandleGetListText_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Gophkeeper/HandleGetListText",
+		FullMethod: "/server.Gophkeeper/HandleGetListText",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GophkeeperServer).HandleGetListText(ctx, req.(*GetListTextRequest))
@@ -236,7 +236,7 @@ func _Gophkeeper_HandleGetNodeText_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Gophkeeper/HandleGetNodeText",
+		FullMethod: "/server.Gophkeeper/HandleGetNodeText",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GophkeeperServer).HandleGetNodeText(ctx, req.(*GetNodeTextRequest))
@@ -254,7 +254,7 @@ func _Gophkeeper_HandlePing_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Gophkeeper/HandlePing",
+		FullMethod: "/server.Gophkeeper/HandlePing",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GophkeeperServer).HandlePing(ctx, req.(*PingRequest))
@@ -272,7 +272,7 @@ func _Gophkeeper_HandleUserExist_Handler(srv interface{}, ctx context.Context, d
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Gophkeeper/HandleUserExist",
+		FullMethod: "/server.Gophkeeper/HandleUserExist",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GophkeeperServer).HandleUserExist(ctx, req.(*UserExistRequest))
@@ -284,7 +284,7 @@ func _Gophkeeper_HandleUserExist_Handler(srv interface{}, ctx context.Context, d
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Gophkeeper_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.Gophkeeper",
+	ServiceName: "server.Gophkeeper",
 	HandlerType: (*GophkeeperServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -317,5 +317,5 @@ var Gophkeeper_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "internal/api/server/proto/gophkeeper.proto",
+	Metadata: "internal/server/proto/gophkeeper.proto",
 }

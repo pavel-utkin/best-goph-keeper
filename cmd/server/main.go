@@ -23,9 +23,8 @@ func main() {
 	db, err := database.New(config, logger)
 	if err != nil {
 		logger.Fatal(err)
-	} else {
-		defer db.Close()
 	}
+	defer db.Close()
 
 	userRepository := user.New(db)
 	textRepository := text.New(db)

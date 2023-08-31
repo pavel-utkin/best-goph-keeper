@@ -27,7 +27,6 @@ func (c Client) Ping() (string, error) {
 	c.logger.Info("ping")
 	msg, err := c.grpc.HandlePing(c.context, &grpc.PingRequest{})
 	if err != nil {
-		c.logger.Error(err)
 		return "", err
 	}
 	return msg.Message, nil
@@ -37,7 +36,6 @@ func (c Client) UserExist(username string) (bool, error) {
 	c.logger.Info("user exist")
 	user, err := c.grpc.HandleUserExist(c.context, &grpc.UserExistRequest{Username: username})
 	if err != nil {
-		c.logger.Error(err)
 		return user.Exist, err
 	}
 	return user.Exist, nil
@@ -48,12 +46,10 @@ func (c Client) Registration(username, password string) (model.Token, error) {
 	token := model.Token{}
 	password, err := encryption.HashPassword(password)
 	if err != nil {
-		c.logger.Error(err)
 		return token, err
 	}
 	registeredUser, err := c.grpc.HandleRegistration(c.context, &grpc.RegistrationRequest{Username: username, Password: password})
 	if err != nil {
-		c.logger.Error(err)
 		return token, err
 	}
 	created, _ := service.ConvertTimestampToTime(registeredUser.AccessToken.CreatedAt)
@@ -68,12 +64,10 @@ func (c Client) Authentication(username, password string) (model.Token, error) {
 	token := model.Token{}
 	password, err := encryption.HashPassword(password)
 	if err != nil {
-		c.logger.Error(err)
 		return token, err
 	}
 	authenticatedUser, err := c.grpc.HandleAuthentication(c.context, &grpc.AuthenticationRequest{Username: username, Password: password})
 	if err != nil {
-		c.logger.Error(err)
 		return token, err
 	}
 	created, _ := service.ConvertTimestampToTime(authenticatedUser.AccessToken.CreatedAt)
@@ -88,7 +82,6 @@ func (c Client) CreateText(name, description, password, plaintext string, token 
 	secretKey := encryption.AesKeySecureRandom([]byte(password))
 	encryptText, err := encryption.Encrypt(plaintext, secretKey)
 	if err != nil {
-		c.logger.Error(err)
 		return err
 	}
 	created, _ := service.ConvertTimeToTimestamp(token.CreatedAt)
@@ -97,7 +90,6 @@ func (c Client) CreateText(name, description, password, plaintext string, token 
 		&grpc.CreateTextRequest{Name: name, Description: description, Text: []byte(encryptText),
 			AccessToken: &grpc.Token{Token: token.AccessToken, UserId: token.UserID, CreatedAt: created, EndDateAt: endDate}})
 	if err != nil {
-		c.logger.Error(err)
 		return err
 	}
 	c.logger.Debug(createdText.Text)
@@ -113,7 +105,6 @@ func (c Client) Synchronization(password string, token model.Token) ([][]string,
 		&grpc.GetListTextRequest{AccessToken: &grpc.Token{Token: token.AccessToken,
 			UserId: token.UserID, CreatedAt: created, EndDateAt: endDate}})
 	if err != nil {
-		c.logger.Error(err)
 		return dataTblText, dataTblCart, err
 	}
 
@@ -130,7 +121,6 @@ func (c Client) Synchronization(password string, token model.Token) ([][]string,
 	for _, node := range nodes.Node {
 		plaintext, err = encryption.Decrypt(string(node.Text), secretKey)
 		if err != nil {
-			c.logger.Error(err)
 			return dataTblText, dataTblCart, err
 		}
 		index := table.GetIndexText(dataTblText, table.ColId, strconv.Itoa(int(node.Id)))

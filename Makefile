@@ -36,4 +36,9 @@ run_godoc:
 gen_protoc:
 	protoc --go_out=. --go_opt=paths=source_relative \
   	--go-grpc_out=. --go-grpc_opt=paths=source_relative \
-	internal/api/proto/gophkeeper.proto
+	internal/server/proto/gophkeeper.proto
+
+.PHONY: build_app
+build_app:
+	go build -o bin/client cmd/client/main.go
+	go build -o bin/server cmd/server/main.go

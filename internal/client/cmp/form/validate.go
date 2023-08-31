@@ -10,15 +10,17 @@ import (
 	"unicode/utf8"
 )
 
+const userNameMaxLength = 6
+const passwordMaxLength = 6
+
 func ValidateLogin(usernameLoginEntry *widget.Entry, passwordLoginEntry *widget.Entry, labelAlertAuth *widget.Label) bool {
-	if utf8.RuneCountInString(usernameLoginEntry.Text) < 6 {
+	defer log.Print(labelAlertAuth.Text)
+	if utf8.RuneCountInString(usernameLoginEntry.Text) < userNameMaxLength {
 		labelAlertAuth.SetText(errors.ErrUsernameIncorrect)
-		log.Print(labelAlertAuth.Text)
 		return false
 	}
-	if utf8.RuneCountInString(passwordLoginEntry.Text) < 6 {
+	if utf8.RuneCountInString(passwordLoginEntry.Text) < passwordMaxLength {
 		labelAlertAuth.SetText(errors.ErrPasswordIncorrect)
-		log.Print(labelAlertAuth.Text)
 		return false
 	}
 	return true
@@ -26,19 +28,17 @@ func ValidateLogin(usernameLoginEntry *widget.Entry, passwordLoginEntry *widget.
 
 func ValidateRegistration(usernameRegistrationEntry *widget.Entry, passwordRegistrationEntry *widget.Entry,
 	passwordConfirmationRegistrationEntry *widget.Entry, labelAlertAuth *widget.Label) bool {
-	if utf8.RuneCountInString(usernameRegistrationEntry.Text) < 6 {
+	defer log.Print(labelAlertAuth.Text)
+	if utf8.RuneCountInString(usernameRegistrationEntry.Text) < userNameMaxLength {
 		labelAlertAuth.SetText(errors.ErrUsernameIncorrect)
-		log.Print(labelAlertAuth.Text)
 		return false
 	}
 	if !encryption.VerifyPassword(passwordRegistrationEntry.Text) {
 		labelAlertAuth.SetText(errors.ErrPasswordIncorrect)
-		log.Print(labelAlertAuth.Text)
 		return false
 	}
 	if passwordRegistrationEntry.Text != passwordConfirmationRegistrationEntry.Text {
 		labelAlertAuth.SetText(errors.ErrPasswordDifferent)
-		log.Print(labelAlertAuth.Text)
 		return false
 	}
 	return true
