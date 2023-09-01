@@ -29,7 +29,7 @@ func (h *Handler) HandleGetListText(ctx context.Context, req *grpc.GetListTextRe
 			codes.Internal, err.Error(),
 		)
 	}
-	list := model.GetListData(ListText)
+	list := model.GetListText(ListText)
 
 	h.logger.Debug(ListText)
 	return &grpc.GetListTextResponse{Node: list}, nil

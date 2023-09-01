@@ -8,8 +8,10 @@ func ClearText(textNameEntry *widget.Entry, textEntry *widget.Entry, textDescrip
 	textDescriptionEntry.Text = ""
 }
 
-func ClearCard(cardNameEntry *widget.Entry, paymentSystemEntry *widget.Entry, numberEntry *widget.Entry,
-	holderEntry *widget.Entry, endDateEntry *widget.Entry, cvcEntry *widget.Entry) {
+func ClearCard(cardNameEntry *widget.Entry, cardDescriptionEntry *widget.Entry, paymentSystemEntry *widget.Entry,
+	numberEntry *widget.Entry, holderEntry *widget.Entry, endDateEntry *widget.Entry, cvcEntry *widget.Entry) {
+	cardNameEntry.SetText("")
+	cardDescriptionEntry.SetText("")
 	cardNameEntry.Text = ""
 	paymentSystemEntry.Text = ""
 	numberEntry.Text = ""

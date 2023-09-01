@@ -1,7 +1,7 @@
 package main
 
 import (
-	"best-goph-keeper/internal/client/api"
+	"best-goph-keeper/internal/client/api/events"
 	"best-goph-keeper/internal/client/config"
 	"best-goph-keeper/internal/client/gui"
 	gophkeeper "best-goph-keeper/internal/server/proto"
@@ -63,8 +63,8 @@ func main() {
 	}
 
 	gophkeeperClient := gophkeeper.NewGophkeeperClient(conn)
-	client := api.NewClient(ctx, logger, gophkeeperClient)
-	_, err = client.Ping()
+	client := events.NewEvent(ctx, logger, gophkeeperClient)
+	_, err = client.EventPing()
 	if err != nil {
 		log.Fatal(err)
 	}

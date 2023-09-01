@@ -67,7 +67,7 @@ func GetTextData(data *Text) *grpc.Text {
 	}
 }
 
-func GetListData(data []Text) []*grpc.Text {
+func GetListText(data []Text) []*grpc.Text {
 	items := make([]*grpc.Text, len(data))
 	for i := range data {
 		created, _ := service.ConvertTimeToTimestamp(data[i].CreatedAt)
