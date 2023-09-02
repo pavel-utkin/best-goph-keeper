@@ -6,6 +6,7 @@ import (
 	grpcHandler "best-goph-keeper/internal/server/api/handlers"
 	configserver "best-goph-keeper/internal/server/config"
 	"best-goph-keeper/internal/server/storage/repositories/card"
+	"best-goph-keeper/internal/server/storage/repositories/login_password"
 	"best-goph-keeper/internal/server/storage/repositories/metadata"
 	"best-goph-keeper/internal/server/storage/repositories/text"
 	"best-goph-keeper/internal/server/storage/repositories/token"
@@ -30,6 +31,7 @@ func main() {
 	userRepository := user.New(db)
 	textRepository := text.New(db)
 	cardRepository := card.New(db)
+	loginPasswordRepository := login_password.New(db)
 	metadataRepository := metadata.New(db)
 	tokenRepository := token.New(db)
 
@@ -41,7 +43,7 @@ func main() {
 	)
 	defer cnl()
 
-	handlerGrpc := grpcHandler.NewHandler(db, userRepository, textRepository, cardRepository, metadataRepository, tokenRepository, logger)
+	handlerGrpc := grpcHandler.NewHandler(db, userRepository, textRepository, cardRepository, loginPasswordRepository, metadataRepository, tokenRepository, logger)
 	go server.StartService(handlerGrpc, config, logger)
 
 	<-ctx.Done()

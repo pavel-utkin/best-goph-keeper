@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type Card struct {
+type LoginPassword struct {
 	ID        int64
 	UserID    int64
 	Key       string
@@ -17,7 +17,7 @@ type Card struct {
 	DeletedAt time.Time
 }
 
-type CreateCardRequest struct {
+type CreateLoginPasswordRequest struct {
 	UserID      int64
 	Name        string
 	Description string
@@ -26,28 +26,18 @@ type CreateCardRequest struct {
 	AccessToken string
 }
 
-type CreateCardResponse struct {
-	Card Card
-}
-
-type GetNodeCardRequest struct {
+type GetNodeLoginPasswordRequest struct {
 	UserID      int64
 	Key         string
 	Value       string
 	AccessToken string
 }
 
-type GetNodeCardResponse struct {
-	Key   string
-	Value string
-	Card  Card
-}
-
-func GetData(data *Card) *grpc.Card {
+func GetLoginPassword(data *LoginPassword) *grpc.LoginPassword {
 	created, _ := service.ConvertTimeToTimestamp(data.CreatedAt)
 	updated, _ := service.ConvertTimeToTimestamp(data.UpdatedAt)
 	deleted, _ := service.ConvertTimeToTimestamp(data.DeletedAt)
-	return &grpc.Card{
+	return &grpc.LoginPassword{
 		UserId:    data.UserID,
 		Data:      data.Data,
 		CreatedAt: created,
@@ -56,12 +46,12 @@ func GetData(data *Card) *grpc.Card {
 	}
 }
 
-func GetListCard(data []Card) []*grpc.Card {
-	items := make([]*grpc.Card, len(data))
+func GetListLoginPassword(data []LoginPassword) []*grpc.LoginPassword {
+	items := make([]*grpc.LoginPassword, len(data))
 	for i := range data {
 		created, _ := service.ConvertTimeToTimestamp(data[i].CreatedAt)
 		updated, _ := service.ConvertTimeToTimestamp(data[i].UpdatedAt)
-		items[i] = &grpc.Card{Id: data[i].ID, Key: data[i].Key, Data: data[i].Data, Value: data[i].Value, CreatedAt: created, UpdatedAt: updated}
+		items[i] = &grpc.LoginPassword{Id: data[i].ID, Key: data[i].Key, Data: data[i].Data, Value: data[i].Value, CreatedAt: created, UpdatedAt: updated}
 	}
 	return items
 }

@@ -1,4 +1,4 @@
-package form
+package function
 
 import (
 	"best-goph-keeper/internal/client/service/algorithm"
@@ -48,7 +48,38 @@ func ValidateRegistration(usernameRegistrationEntry *widget.Entry, passwordRegis
 	return true
 }
 
-func ValidateText(exists bool, textNameEntry *widget.Entry, textEntry *widget.Entry, textDescriptionEntry *widget.Entry, labelAlertText *widget.Label) bool {
+func ValidateLoginPassword(exists bool, loginPasswordNameEntry *widget.Entry, loginPasswordDescriptionEntry *widget.Entry,
+	loginEntry *widget.Entry, passwordEntry *widget.Entry, labelAlertLoginPassword *widget.Label) bool {
+	if exists {
+		labelAlertLoginPassword.SetText(errors.ErrLoginPasswordExist)
+		log.Print(labelAlertLoginPassword.Text)
+		return false
+	}
+	if loginPasswordNameEntry.Text == "" {
+		labelAlertLoginPassword.SetText(errors.ErrNameEmpty)
+		log.Print(labelAlertLoginPassword.Text)
+		return false
+	}
+	if loginPasswordDescriptionEntry.Text == "" {
+		labelAlertLoginPassword.SetText(errors.ErrDescriptionEmpty)
+		log.Print(labelAlertLoginPassword.Text)
+		return false
+	}
+	if loginEntry.Text == "" {
+		labelAlertLoginPassword.SetText(errors.ErrLoginEmpty)
+		log.Print(labelAlertLoginPassword.Text)
+		return false
+	}
+	if passwordEntry.Text == "" {
+		labelAlertLoginPassword.SetText(errors.ErrPasswordEmpty)
+		log.Print(labelAlertLoginPassword.Text)
+		return false
+	}
+	return true
+}
+
+func ValidateText(exists bool, textNameEntry *widget.Entry, textEntry *widget.Entry, textDescriptionEntry *widget.Entry,
+	labelAlertText *widget.Label) bool {
 	if exists {
 		labelAlertText.SetText(errors.ErrTextExist)
 		log.Print(labelAlertText)
@@ -141,6 +172,5 @@ func ValidateCard(exists bool, cardNameEntry *widget.Entry, cardDescriptionEntry
 			return false
 		}
 	}
-
 	return true
 }

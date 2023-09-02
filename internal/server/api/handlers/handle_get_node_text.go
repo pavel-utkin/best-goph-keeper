@@ -34,7 +34,7 @@ func (h *Handler) HandleGetNodeText(ctx context.Context, req *grpc.GetNodeTextRe
 			codes.Internal, err.Error(),
 		)
 	}
-	text := model.GetTextData(GetNodeText)
+	text := model.GetText(GetNodeText)
 
 	h.logger.Debug(GetNodeText)
 	return &grpc.GetNodeTextResponse{Text: text}, nil

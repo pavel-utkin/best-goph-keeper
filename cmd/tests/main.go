@@ -57,8 +57,10 @@ func main() {
 		CreatedAt: created, EndDateAt: endDate}
 	log.Info(accessToken)
 
-	randName := randomizer.RandStringRunes(10)
-	randDescription := randomizer.RandStringRunes(10)
+	//----------------------------------------------------------------- text
+
+	randName1 := randomizer.RandStringRunes(10)
+	randDescription1 := randomizer.RandStringRunes(10)
 	plaintext := "Hi my sweetly friends!!!!!!!TeST ВСЕМПРИВЕТ!"
 
 	secretKey := encryption.AesKeySecureRandom([]byte(password))
@@ -67,26 +69,26 @@ func main() {
 		log.Fatal(err)
 	}
 	createdText, err := client.HandleCreateText(context.Background(),
-		&gophkeeper.CreateTextRequest{Name: randName, Description: randDescription, Text: []byte(encryptText), AccessToken: authenticatedUser.AccessToken})
+		&gophkeeper.CreateTextRequest{Name: randName1, Description: randDescription1, Text: []byte(encryptText), AccessToken: authenticatedUser.AccessToken})
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Info(createdText.Text)
 
-	getNodeText, err := client.HandleGetNodeText(context.Background(), &gophkeeper.GetNodeTextRequest{Name: randName, AccessToken: authenticatedUser.AccessToken})
+	getNodeText, err := client.HandleGetNodeText(context.Background(), &gophkeeper.GetNodeTextRequest{Name: randName1, AccessToken: authenticatedUser.AccessToken})
 	if err != nil {
 		log.Fatal(err)
 	}
-	plaintext, err = encryption.Decrypt(string(getNodeText.Text.Text), secretKey)
+	plaintext, err = encryption.Decrypt(string(getNodeText.Text.Data), secretKey)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Info(plaintext)
 
-	randName = randomizer.RandStringRunes(10)
-	randDescription = randomizer.RandStringRunes(10)
+	randName2 := randomizer.RandStringRunes(10)
+	randDescription2 := randomizer.RandStringRunes(10)
 	createdText2, err := client.HandleCreateText(context.Background(),
-		&gophkeeper.CreateTextRequest{Name: randName, Description: randDescription, Text: []byte(encryptText), AccessToken: authenticatedUser.AccessToken})
+		&gophkeeper.CreateTextRequest{Name: randName2, Description: randDescription2, Text: []byte(encryptText), AccessToken: authenticatedUser.AccessToken})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -97,9 +99,29 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Info(getListText)
-	//-----------------------------------------------------------------
-	randName = randomizer.RandStringRunes(10)
-	card := model.Card{Name: randName, PaymentSystem: randName, Number: randName, Holder: randName, EndData: time.Now(), CVC: 13579}
+
+	deleteText, err := client.HandleDeleteText(context.Background(), &gophkeeper.DeleteTextRequest{Name: randName2, AccessToken: authenticatedUser.AccessToken})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(deleteText)
+
+	updateText, err := client.HandleUpdateText(context.Background(), &gophkeeper.UpdateTextRequest{Name: randName1, Data: []byte("update text"), AccessToken: authenticatedUser.AccessToken})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(updateText)
+
+	getListText, err = client.HandleGetListText(context.Background(), &gophkeeper.GetListTextRequest{AccessToken: authenticatedUser.AccessToken})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(getListText)
+
+	//----------------------------------------------------------------- card
+	randName3 := randomizer.RandStringRunes(10)
+	randDescription3 := randomizer.RandStringRunes(10)
+	card := model.Card{Name: randName3, Description: randDescription3, PaymentSystem: randName3, Number: randName3, Holder: randName3, EndData: time.Now(), CVC: 13579}
 	jsonCard, err := json.Marshal(card)
 	if err != nil {
 		log.Fatal(err)
@@ -111,13 +133,13 @@ func main() {
 		log.Fatal(err)
 	}
 	createdCard, err := client.HandleCreateCard(context.Background(),
-		&gophkeeper.CreateCardRequest{Name: randName, Data: []byte(encryptCard), AccessToken: authenticatedUser.AccessToken})
+		&gophkeeper.CreateCardRequest{Name: randName3, Description: randDescription3, Data: []byte(encryptCard), AccessToken: authenticatedUser.AccessToken})
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Info(createdCard.Data)
 
-	getNodeCard, err := client.HandleGetNodeCard(context.Background(), &gophkeeper.GetNodeCardRequest{Name: randName, AccessToken: authenticatedUser.AccessToken})
+	getNodeCard, err := client.HandleGetNodeCard(context.Background(), &gophkeeper.GetNodeCardRequest{Name: randName3, AccessToken: authenticatedUser.AccessToken})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -127,8 +149,9 @@ func main() {
 	}
 	log.Info(plaintext)
 
-	randName = randomizer.RandStringRunes(10)
-	card = model.Card{Name: randName, PaymentSystem: randName, Number: randName, Holder: randName, EndData: time.Now(), CVC: 13579}
+	randName4 := randomizer.RandStringRunes(10)
+	randDescription4 := randomizer.RandStringRunes(10)
+	card = model.Card{Name: randName4, Description: randDescription4, PaymentSystem: randName4, Number: randName4, Holder: randName4, EndData: time.Now(), CVC: 13579}
 	jsonCard, err = json.Marshal(card)
 	if err != nil {
 		log.Fatal(err)
@@ -140,7 +163,7 @@ func main() {
 		log.Fatal(err)
 	}
 	createdCard2, err := client.HandleCreateCard(context.Background(),
-		&gophkeeper.CreateCardRequest{Name: randName, Data: []byte(encryptCard), AccessToken: authenticatedUser.AccessToken})
+		&gophkeeper.CreateCardRequest{Name: randName4, Data: []byte(encryptCard), AccessToken: authenticatedUser.AccessToken})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -151,4 +174,96 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Info(getListCard)
+
+	deleteCard, err := client.HandleDeleteCard(context.Background(), &gophkeeper.DeleteCardRequest{Name: randName4, AccessToken: authenticatedUser.AccessToken})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(deleteCard)
+
+	updateCard, err := client.HandleUpdateCard(context.Background(), &gophkeeper.UpdateCardRequest{Name: randName3, Data: []byte("update card"), AccessToken: authenticatedUser.AccessToken})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(updateCard)
+
+	getListCard, err = client.HandleGetListCard(context.Background(), &gophkeeper.GetListCardRequest{AccessToken: authenticatedUser.AccessToken})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(getListCard)
+	//----------------------------------------------------------------- login password
+	randName5 := randomizer.RandStringRunes(10)
+	randDescription5 := randomizer.RandStringRunes(10)
+	loginPassword := model.LoginPassword{Name: randName5, Description: randDescription5, Login: "Login", Password: "Password"}
+	jsonLoginPassword, err := json.Marshal(loginPassword)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	secretKey = encryption.AesKeySecureRandom([]byte(password))
+	encryptLoginPassword, err := encryption.Encrypt(string(jsonLoginPassword), secretKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+	createdLoginPassword, err := client.HandleCreateLoginPassword(context.Background(),
+		&gophkeeper.CreateLoginPasswordRequest{Name: randName5, Description: randName5, Data: []byte(encryptLoginPassword), AccessToken: authenticatedUser.AccessToken})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(createdLoginPassword.Data)
+
+	getNodeLoginPassword, err := client.HandleGetNodeLoginPassword(context.Background(), &gophkeeper.GetNodeLoginPasswordRequest{Name: randName5, AccessToken: authenticatedUser.AccessToken})
+	if err != nil {
+		log.Fatal(err)
+	}
+	plaintext, err = encryption.Decrypt(string(getNodeLoginPassword.Data.Data), secretKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(plaintext)
+
+	randName6 := randomizer.RandStringRunes(10)
+	randDescription6 := randomizer.RandStringRunes(10)
+	loginPassword = model.LoginPassword{Name: randName6, Description: randDescription6, Login: "Login", Password: "Password"}
+	jsonLoginPassword, err = json.Marshal(loginPassword)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	secretKey = encryption.AesKeySecureRandom([]byte(password))
+	encryptLoginPassword, err = encryption.Encrypt(string(jsonLoginPassword), secretKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+	createdLoginPassword2, err := client.HandleCreateLoginPassword(context.Background(),
+		&gophkeeper.CreateLoginPasswordRequest{Name: randName6, Description: randName6, Data: []byte(encryptLoginPassword), AccessToken: authenticatedUser.AccessToken})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(createdLoginPassword2.Data)
+
+	getListLoginPassword, err := client.HandleGetListLoginPassword(context.Background(), &gophkeeper.GetListLoginPasswordRequest{AccessToken: authenticatedUser.AccessToken})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(getListLoginPassword)
+
+	deleteLoginPassword, err := client.HandleDeleteLoginPassword(context.Background(), &gophkeeper.DeleteLoginPasswordRequest{Name: randName6, AccessToken: authenticatedUser.AccessToken})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(deleteLoginPassword)
+
+	updateLoginPassword, err := client.HandleUpdateLoginPassword(context.Background(), &gophkeeper.UpdateLoginPasswordRequest{Name: randName5, Data: []byte("update login password"), AccessToken: authenticatedUser.AccessToken})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(updateLoginPassword)
+
+	getListLoginPassword, err = client.HandleGetListLoginPassword(context.Background(), &gophkeeper.GetListLoginPasswordRequest{AccessToken: authenticatedUser.AccessToken})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(getListLoginPassword)
 }

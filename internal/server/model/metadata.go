@@ -24,6 +24,13 @@ type CreateMetadataRequest struct {
 	AccessToken string
 }
 
+type DeleteMetadataRequest struct {
+	EntityId int64
+	Key      string
+	Value    string
+	Type     string
+}
+
 func GetMetadata(data *Metadata) *grpc.Metadata {
 	return &grpc.Metadata{
 		EntityId:  data.EntityId,

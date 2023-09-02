@@ -33,7 +33,7 @@ func (h *Handler) HandleGetNodeCard(ctx context.Context, req *grpc.GetNodeCardRe
 			codes.Internal, err.Error(),
 		)
 	}
-	card := model.GetCardData(GetNodeCard)
+	card := model.GetData(GetNodeCard)
 
 	h.logger.Debug(GetNodeCard)
 	return &grpc.GetNodeCardResponse{Data: card}, nil

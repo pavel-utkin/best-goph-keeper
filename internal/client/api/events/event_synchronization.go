@@ -11,11 +11,12 @@ import (
 	"strconv"
 )
 
-func (c Event) EventSynchronization(password string, token model.Token) ([][]string, [][]string, error) {
+func (c Event) EventSynchronization(password string, token model.Token) ([][]string, [][]string, [][]string, error) {
 	c.logger.Info("Synchronization")
 
 	dataTblText := [][]string{}
 	dataTblCard := [][]string{}
+	dataTblLoginPassword := [][]string{}
 	created, _ := service.ConvertTimeToTimestamp(token.CreatedAt)
 	endDate, _ := service.ConvertTimeToTimestamp(token.EndDateAt)
 
@@ -24,7 +25,7 @@ func (c Event) EventSynchronization(password string, token model.Token) ([][]str
 			UserId: token.UserID, CreatedAt: created, EndDateAt: endDate}})
 	if err != nil {
 		c.logger.Error(err)
-		return dataTblText, dataTblCard, err
+		return dataTblText, dataTblCard, dataTblLoginPassword, err
 	}
 
 	nodesCard, err := c.grpc.HandleGetListCard(c.context,
@@ -32,7 +33,15 @@ func (c Event) EventSynchronization(password string, token model.Token) ([][]str
 			UserId: token.UserID, CreatedAt: created, EndDateAt: endDate}})
 	if err != nil {
 		c.logger.Error(err)
-		return dataTblText, dataTblCard, err
+		return dataTblText, dataTblCard, dataTblLoginPassword, err
+	}
+
+	nodesLoginPassword, err := c.grpc.HandleGetListLoginPassword(c.context,
+		&grpc.GetListLoginPasswordRequest{AccessToken: &grpc.Token{Token: token.AccessToken,
+			UserId: token.UserID, CreatedAt: created, EndDateAt: endDate}})
+	if err != nil {
+		c.logger.Error(err)
+		return dataTblText, dataTblCard, dataTblLoginPassword, err
 	}
 
 	var plaintext string
@@ -41,16 +50,19 @@ func (c Event) EventSynchronization(password string, token model.Token) ([][]str
 	titleText := []string{"ID", "NAME", "DESCRIPTION", "DATA", "CREATED AT", "UPDATED AT"}
 	titleCard := []string{"ID", "NAME", "DESCRIPTION", "PAYMENT SYSTEM", "NUMBER", "HOLDER", "CVC",
 		"END DATE", "CREATED AT", "UPDATED AT"}
+	titleLoginPassword := []string{"ID", "NAME", "DESCRIPTION", "LOGIN", "PASSWORD", "CREATED AT", "UPDATED AT"}
 	dataTblText = append(dataTblText, titleText)
 	dataTblCard = append(dataTblCard, titleCard)
+	dataTblLoginPassword = append(dataTblLoginPassword, titleLoginPassword)
 	dataTblTextPointer := &dataTblText
 	dataTblCardPointer := &dataTblCard
+	dataTblLoginPasswordPointer := &dataTblLoginPassword
 
 	for _, node := range nodesText.Node {
-		plaintext, err = encryption.Decrypt(string(node.Text), secretKey)
+		plaintext, err = encryption.Decrypt(string(node.Data), secretKey)
 		if err != nil {
 			c.logger.Error(err)
-			return dataTblText, dataTblCard, err
+			return dataTblText, dataTblCard, dataTblLoginPassword, err
 		}
 		index := table.GetIndex(dataTblText, table.ColId, strconv.Itoa(int(node.Id)))
 		if index == 0 { // entity_id does not exist, add record
@@ -64,17 +76,15 @@ func (c Event) EventSynchronization(password string, token model.Token) ([][]str
 		plaintext, err = encryption.Decrypt(string(node.Data), secretKey)
 		if err != nil {
 			c.logger.Error(err)
-			return dataTblText, dataTblCard, err
+			return dataTblText, dataTblCard, dataTblLoginPassword, err
 		}
 
 		var card model.Card
 		err = json.Unmarshal([]byte(plaintext), &card)
 		if err != nil {
 			c.logger.Error(err)
-			return dataTblText, dataTblCard, err
+			return dataTblText, dataTblCard, dataTblLoginPassword, err
 		}
-
-		//table.AppendCard(node, dataTblCardPointer, card)
 		index := table.GetIndex(dataTblCard, table.ColId, strconv.Itoa(int(node.Id)))
 		if index == 0 { // entity_id does not exist, add record
 			table.AppendCard(node, dataTblCardPointer, card)
@@ -83,10 +93,33 @@ func (c Event) EventSynchronization(password string, token model.Token) ([][]str
 		}
 	}
 
+	for _, node := range nodesLoginPassword.Node {
+		plaintext, err = encryption.Decrypt(string(node.Data), secretKey)
+		if err != nil {
+			c.logger.Error(err)
+			return dataTblText, dataTblCard, dataTblLoginPassword, err
+		}
+
+		var loginPassword model.LoginPassword
+		err = json.Unmarshal([]byte(plaintext), &loginPassword)
+		if err != nil {
+			c.logger.Error(err)
+			return dataTblText, dataTblCard, dataTblLoginPassword, err
+		}
+		index := table.GetIndex(dataTblLoginPassword, table.ColId, strconv.Itoa(int(node.Id)))
+		if index == 0 { // entity_id does not exist, add record
+			table.AppendLoginPassword(node, dataTblLoginPasswordPointer, loginPassword)
+		} else { // entity_id exists, update tags
+			table.UpdateLoginPassword(node, dataTblLoginPasswordPointer, index)
+		}
+	}
+
 	table.DeleteColId(dataTblTextPointer)
 	table.DeleteColId(dataTblCardPointer)
+	table.DeleteColId(dataTblLoginPasswordPointer)
 	logrus.Debug(dataTblText)
 	logrus.Debug(dataTblCard)
+	logrus.Debug(dataTblLoginPassword)
 
-	return dataTblText, dataTblCard, nil
+	return dataTblText, dataTblCard, dataTblLoginPassword, nil
 }

@@ -1,4 +1,4 @@
-package cmp
+package form
 
 import "fyne.io/fyne/v2/widget"
 

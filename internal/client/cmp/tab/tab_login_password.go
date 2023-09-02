@@ -1,0 +1,15 @@
+package tab
+
+import (
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/widget"
+)
+
+func GetTabLoginPassword(tblLoginPassword *widget.Table, buttonSynchronization *widget.Button, loginPasswordAdd *widget.Button, loginPasswordDelete *widget.Button, loginPasswordUpdate *widget.Button) *container.TabItem {
+	bottomContainer := container.New(layout.NewHBoxLayout(), loginPasswordAdd, loginPasswordDelete, loginPasswordUpdate)
+	containerTblLoginPassword := layout.NewBorderLayout(buttonSynchronization, bottomContainer, nil, nil)
+	boxLoginPassword := fyne.NewContainerWithLayout(containerTblLoginPassword, buttonSynchronization, tblLoginPassword, bottomContainer)
+	return container.NewTabItem("Логин пароль", boxLoginPassword)
+}

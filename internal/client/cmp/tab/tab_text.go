@@ -1,0 +1,15 @@
+package tab
+
+import (
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/widget"
+)
+
+func GetTabTexts(tblText *widget.Table, buttonSynchronization *widget.Button, textAdd *widget.Button, textDelete *widget.Button, textUpdate *widget.Button) *container.TabItem {
+	bottomContainer := container.New(layout.NewHBoxLayout(), textAdd, textDelete, textUpdate)
+	containerTblText := layout.NewBorderLayout(buttonSynchronization, bottomContainer, nil, nil)
+	boxText := fyne.NewContainerWithLayout(containerTblText, buttonSynchronization, tblText, bottomContainer)
+	return container.NewTabItem("Текстовые данные", boxText)
+}

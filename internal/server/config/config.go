@@ -20,7 +20,7 @@ func NewConfigServer(log *logrus.Logger) *ConfigServer {
 	// Set default values
 	configServer := ConfigServer{
 		GRPC:                "localhost:8080",
-		DSN:                 "host=localhost port=5432 user=postgres password=0255 dbname=gophkeeper sslmode=disable",
+		DSN:                 "host=localhost port=5432 user=postgres password=password dbname=gophkeeper sslmode=disable",
 		AccessTokenLifetime: 300 * time.Second,
 	}
 

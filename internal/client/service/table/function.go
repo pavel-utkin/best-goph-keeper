@@ -78,6 +78,29 @@ func UpdateCard(node *grpc.Card, dataTblCard *[][]string, index int) {
 	}
 }
 
+func AppendLoginPassword(node *grpc.LoginPassword, dataTblLoginPassword *[][]string, jsonLoginPassword model.LoginPassword) {
+	layout := "01/02/2006 15:04:05"
+	created, _ := service.ConvertTimestampToTime(node.CreatedAt)
+	updated, _ := service.ConvertTimestampToTime(node.UpdatedAt)
+	if node.Key == string(vars.Name) {
+		row := []string{strconv.Itoa(int(node.Id)), node.Value, "", jsonLoginPassword.Login, jsonLoginPassword.Password,
+			created.Format(layout), updated.Format(layout)}
+		*dataTblLoginPassword = append(*dataTblLoginPassword, row)
+	} else if node.Key == string(vars.Description) {
+		row := []string{strconv.Itoa(int(node.Id)), "", node.Value, jsonLoginPassword.Login, jsonLoginPassword.Password,
+			created.Format(layout), updated.Format(layout)}
+		*dataTblLoginPassword = append(*dataTblLoginPassword, row)
+	}
+}
+
+func UpdateLoginPassword(node *grpc.LoginPassword, dataTblLoginPassword *[][]string, index int) {
+	if node.Key == string(vars.Name) {
+		(*dataTblLoginPassword)[index][ColName] = node.Value
+	} else if node.Key == string(vars.Description) {
+		(*dataTblLoginPassword)[index][ColDescription] = node.Value
+	}
+}
+
 func DeleteColId(dataTblText *[][]string) {
 	for index := range *dataTblText {
 		(*dataTblText)[index] = (*dataTblText)[index][1:]

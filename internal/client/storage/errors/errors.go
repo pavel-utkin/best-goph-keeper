@@ -4,6 +4,9 @@ var (
 	ErrLogin              = "Неудачная попытка аутентификации"
 	ErrRegistration       = "Неудачная попытка регистрации"
 	ErrUserExist          = "Пользователь с таким username зарегистрирован"
+	ErrLoginPasswordExist = "Логин пароль с таким name уже существует"
+	ErrLoginEmpty         = "Login не заполнен"
+	ErrPasswordEmpty      = "Password не заполнен"
 	ErrUsernameIncorrect  = "Длинна username должна быть не менее шести символов"
 	ErrPasswordIncorrect  = "Пароль должен состоять минимум из 8 букв, 1 цифра, 1 верхний регистр, 1 специальный символ (пример: Password-123)"
 	ErrPasswordDifferent  = "Пароли не совпали"
@@ -21,4 +24,5 @@ var (
 	ErrCvcEmpty           = "CVC не заполнен"
 	ErrCvcIncorrect       = "CVC некорректный (пример: 123)"
 	ErrTextAdd            = "Ошибка при добавлении текста (попробуйте обновить данные)"
+	ErrLoginPasswordAdd   = "Ошибка при добавлении логин-пароль (попробуйте обновить данные)"
 )

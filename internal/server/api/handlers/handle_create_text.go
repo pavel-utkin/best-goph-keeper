@@ -27,7 +27,7 @@ func (h *Handler) HandleCreateText(ctx context.Context, req *grpc.CreateTextRequ
 	TextData.UserID = req.AccessToken.UserId
 	TextData.Name = req.Name
 	TextData.Description = req.Description
-	TextData.Text = req.Text
+	TextData.Data = req.Text
 	if TextData.Name == "" || TextData.Description == "" {
 		err := errors.ErrNoMetadataSet
 		h.logger.Error(err)
@@ -57,7 +57,7 @@ func (h *Handler) HandleCreateText(ctx context.Context, req *grpc.CreateTextRequ
 			codes.Internal, err.Error(),
 		)
 	}
-	text := model.GetTextData(CreatedText)
+	text := model.GetText(CreatedText)
 
 	Metadata := &model.CreateMetadataRequest{}
 	Metadata.EntityId = CreatedText.ID
