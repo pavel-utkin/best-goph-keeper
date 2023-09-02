@@ -16,11 +16,11 @@ func (c Event) EventCreateText(name, description, password, plaintext string, to
 		c.logger.Error(err)
 		return err
 	}
-	created, _ := service.ConvertTimeToTimestamp(token.CreatedAt)
-	endDate, _ := service.ConvertTimeToTimestamp(token.EndDateAt)
+	createdToken, _ := service.ConvertTimeToTimestamp(token.CreatedAt)
+	endDateToken, _ := service.ConvertTimeToTimestamp(token.EndDateAt)
 	createdText, err := c.grpc.HandleCreateText(context.Background(),
 		&grpc.CreateTextRequest{Name: name, Description: description, Text: []byte(encryptText),
-			AccessToken: &grpc.Token{Token: token.AccessToken, UserId: token.UserID, CreatedAt: created, EndDateAt: endDate}})
+			AccessToken: &grpc.Token{Token: token.AccessToken, UserId: token.UserID, CreatedAt: createdToken, EndDateAt: endDateToken}})
 	if err != nil {
 		c.logger.Error(err)
 		return err

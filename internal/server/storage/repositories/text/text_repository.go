@@ -39,7 +39,7 @@ func (t *Text) GetNodeText(textRequest *model.GetNodeTextRequest) (*model.Text, 
 	err := t.db.Pool.QueryRow("SELECT text.data FROM metadata "+
 		"inner join text on metadata.entity_id = text.text_id "+
 		"inner join users on text.user_id  = users.user_id "+
-		"where metadata.key = $1 and metadata.value = $2 and users.user_id = $3 and metadata.type = $4",
+		"where metadata.key = $1 and metadata.value = $2 and users.user_id = $3 and metadata.type = $4 and text.deleted_at IS NULL",
 		string(vars.Name), textRequest.Value, textRequest.UserID, string(vars.Text)).
 		Scan(&text.Data)
 	if err != nil {
@@ -86,7 +86,7 @@ func (t *Text) GetIdText(value string, userID int64) (int64, error) {
 	err := t.db.Pool.QueryRow("SELECT text.text_id FROM metadata "+
 		"inner join text on metadata.entity_id = text.text_id "+
 		"inner join users on text.user_id  = users.user_id "+
-		"where metadata.key = $1 and metadata.value = $2 and users.user_id = $3 and metadata.type = $4",
+		"where metadata.key = $1 and metadata.value = $2 and users.user_id = $3 and metadata.type = $4 and text.deleted_at IS NULL",
 		string(vars.Name), value, userID, string(vars.Text)).
 		Scan(&textID)
 	if err != nil {
@@ -104,7 +104,7 @@ func (t *Text) KeyExists(textRequest *model.CreateTextRequest) (bool, error) {
 	row := t.db.Pool.QueryRow("SELECT EXISTS(SELECT 1 FROM metadata "+
 		"inner join text on metadata.entity_id = text.text_id "+
 		"inner join users on text.user_id  = users.user_id "+
-		"where metadata.key = $1 and metadata.value = $2 and users.user_id = $3 and metadata.type = $4)",
+		"where metadata.key = $1 and metadata.value = $2 and users.user_id = $3 and metadata.type = $4 and text.deleted_at IS NULL)",
 		string(vars.Name), textRequest.Name, textRequest.UserID, string(vars.Text))
 	if err := row.Scan(&exists); err != nil {
 		return exists, err
@@ -114,9 +114,8 @@ func (t *Text) KeyExists(textRequest *model.CreateTextRequest) (bool, error) {
 
 func (t *Text) DeleteText(textID int64) error {
 	var id int64
-	layout := "01/02/2006 15:04:05"
 	if err := t.db.Pool.QueryRow("UPDATE text SET deleted_at = $1 WHERE text_id = $2 RETURNING text_id",
-		time.Now().Format(layout),
+		time.Now(),
 		textID,
 	).Scan(&id); err != nil {
 		return err
@@ -126,10 +125,9 @@ func (t *Text) DeleteText(textID int64) error {
 
 func (t *Text) UpdateText(textID int64, data []byte) error {
 	var id int64
-	layout := "01/02/2006 15:04:05"
 	if err := t.db.Pool.QueryRow("UPDATE text SET data = $1, updated_at = $2 WHERE text_id = $3 RETURNING text_id",
 		data,
-		time.Now().Format(layout),
+		time.Now(),
 		textID,
 	).Scan(&id); err != nil {
 		return err

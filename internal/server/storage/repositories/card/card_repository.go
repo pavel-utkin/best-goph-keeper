@@ -39,7 +39,7 @@ func (c *Card) GetIdCard(value string, userID int64) (int64, error) {
 	err := c.db.Pool.QueryRow("SELECT card.card_id FROM metadata "+
 		"inner join card on metadata.entity_id = card.card_id "+
 		"inner join users on card.user_id  = users.user_id "+
-		"where metadata.key = $1 and metadata.value = $2 and users.user_id = $3 and metadata.type = $4",
+		"where metadata.key = $1 and metadata.value = $2 and users.user_id = $3 and metadata.type = $4 and card.deleted_at IS NULL",
 		string(vars.Name), value, userID, string(vars.Card)).
 		Scan(&cardID)
 	if err != nil {
@@ -57,7 +57,7 @@ func (c *Card) KeyExists(cardRequest *model.CreateCardRequest) (bool, error) {
 	row := c.db.Pool.QueryRow("SELECT EXISTS(SELECT 1 FROM metadata "+
 		"inner join card on metadata.entity_id = card.card_id "+
 		"inner join users on card.user_id  = users.user_id "+
-		"where metadata.key = $1 and metadata.value = $2 and users.user_id = $3 and metadata.type = $4)",
+		"where metadata.key = $1 and metadata.value = $2 and users.user_id = $3 and metadata.type = $4 and card.deleted_at IS NULL)",
 		string(vars.Name), cardRequest.Name, cardRequest.UserID, string(vars.Card))
 	if err := row.Scan(&exists); err != nil {
 		return exists, err
@@ -70,7 +70,7 @@ func (c *Card) GetNodeCard(cardRequest *model.GetNodeCardRequest) (*model.Card, 
 	err := c.db.Pool.QueryRow("SELECT card.data FROM metadata "+
 		"inner join card on metadata.entity_id = card.card_id "+
 		"inner join users on card.user_id  = users.user_id "+
-		"where metadata.key = $1 and metadata.value = $2 and users.user_id = $3 and metadata.type = $4",
+		"where metadata.key = $1 and metadata.value = $2 and users.user_id = $3 and metadata.type = $4 and card.deleted_at IS NULL",
 		string(vars.Name), cardRequest.Value, cardRequest.UserID, string(vars.Card)).Scan(
 		&card.Data,
 	)
@@ -115,9 +115,8 @@ func (c *Card) GetListCard(userId int64) ([]model.Card, error) {
 
 func (c *Card) DeleteCard(entityId int64) error {
 	var id int64
-	layout := "01/02/2006 15:04:05"
 	if err := c.db.Pool.QueryRow("UPDATE card SET deleted_at = $1 WHERE card_id = $2 RETURNING card_id",
-		time.Now().Format(layout),
+		time.Now(),
 		entityId,
 	).Scan(&id); err != nil {
 		return err
@@ -127,10 +126,9 @@ func (c *Card) DeleteCard(entityId int64) error {
 
 func (lp *Card) UpdateCard(textID int64, data []byte) error {
 	var id int64
-	layout := "01/02/2006 15:04:05"
 	if err := lp.db.Pool.QueryRow("UPDATE card SET data = $1, updated_at = $2 WHERE card_id = $3 RETURNING card_id",
 		data,
-		time.Now().Format(layout),
+		time.Now(),
 		textID,
 	).Scan(&id); err != nil {
 		return err

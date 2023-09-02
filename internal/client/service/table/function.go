@@ -2,10 +2,12 @@ package table
 
 import (
 	"best-goph-keeper/internal/client/model"
+	"best-goph-keeper/internal/client/storage/layouts"
 	grpc "best-goph-keeper/internal/server/proto"
 	"best-goph-keeper/internal/server/service"
 	"best-goph-keeper/internal/server/storage/vars"
 	"strconv"
+	"time"
 )
 
 const ColId = 0
@@ -33,15 +35,52 @@ func GetIndex(slice [][]string, targetColumn int, targetValue string) (index int
 	return 0
 }
 
+func RemoveRow(slice [][]string, indexRow int) [][]string {
+	return append(slice[:indexRow], slice[indexRow+1:]...)
+}
+
+func UpdateRowLoginPassword(login, password string, slice [][]string, indexRow int) [][]string {
+	indexColLogin := 2
+	indexColPassword := 3
+	indexColUpdateAt := 5
+	slice[indexRow][indexColLogin] = login
+	slice[indexRow][indexColPassword] = password
+	slice[indexRow][indexColUpdateAt] = time.Now().Format(layouts.LayoutDateAndTime.ToString())
+	return slice
+}
+
+func UpdateRowText(text string, slice [][]string, indexRow int) [][]string {
+	indexColText := 2
+	indexColUpdateAt := 4
+	slice[indexRow][indexColText] = text
+	slice[indexRow][indexColUpdateAt] = time.Now().Format(layouts.LayoutDateAndTime.ToString())
+	return slice
+}
+
+func UpdateRowCard(paymentSystem, number, holder, cvc, endDate string, slice [][]string, indexRow int) [][]string {
+	indexColPaymentSystem := 2
+	indexColNumber := 3
+	indexColHolder := 4
+	indexColCvc := 5
+	indexColEndDate := 6
+	indexColUpdateAt := 8
+	slice[indexRow][indexColPaymentSystem] = paymentSystem
+	slice[indexRow][indexColNumber] = number
+	slice[indexRow][indexColHolder] = holder
+	slice[indexRow][indexColEndDate] = endDate
+	slice[indexRow][indexColCvc] = cvc
+	slice[indexRow][indexColUpdateAt] = time.Now().Format(layouts.LayoutDateAndTime.ToString())
+	return slice
+}
+
 func AppendText(node *grpc.Text, dataTblText *[][]string, plaintext string) {
-	layout := "01/02/2006 15:04:05"
 	created, _ := service.ConvertTimestampToTime(node.CreatedAt)
 	updated, _ := service.ConvertTimestampToTime(node.UpdatedAt)
 	if node.Key == string(vars.Name) {
-		row := []string{strconv.Itoa(int(node.Id)), node.Value, "", plaintext, created.Format(layout), updated.Format(layout)}
+		row := []string{strconv.Itoa(int(node.Id)), node.Value, "", plaintext, created.Format(layouts.LayoutDateAndTime.ToString()), updated.Format(layouts.LayoutDateAndTime.ToString())}
 		*dataTblText = append(*dataTblText, row)
 	} else if node.Key == string(vars.Description) {
-		row := []string{strconv.Itoa(int(node.Id)), "", node.Value, plaintext, created.Format(layout), updated.Format(layout)}
+		row := []string{strconv.Itoa(int(node.Id)), "", node.Value, plaintext, created.Format(layouts.LayoutDateAndTime.ToString()), updated.Format(layouts.LayoutDateAndTime.ToString())}
 		*dataTblText = append(*dataTblText, row)
 	}
 }
@@ -55,17 +94,17 @@ func UpdateText(node *grpc.Text, dataTblText *[][]string, index int) {
 }
 
 func AppendCard(node *grpc.Card, dataTblCard *[][]string, jsonCard model.Card) {
-	layoutEndData := "01/02/2006"
-	layout := "01/02/2006 15:04:05"
 	created, _ := service.ConvertTimestampToTime(node.CreatedAt)
 	updated, _ := service.ConvertTimestampToTime(node.UpdatedAt)
 	if node.Key == string(vars.Name) {
 		row := []string{strconv.Itoa(int(node.Id)), node.Value, "", jsonCard.PaymentSystem, jsonCard.Number,
-			jsonCard.Holder, strconv.Itoa(jsonCard.CVC), jsonCard.EndData.Format(layoutEndData), created.Format(layout), updated.Format(layout)}
+			jsonCard.Holder, strconv.Itoa(jsonCard.CVC), jsonCard.EndDate.Format(layouts.LayoutDate.ToString()),
+			created.Format(layouts.LayoutDateAndTime.ToString()), updated.Format(layouts.LayoutDateAndTime.ToString())}
 		*dataTblCard = append(*dataTblCard, row)
 	} else if node.Key == string(vars.Description) {
 		row := []string{strconv.Itoa(int(node.Id)), "", node.Value, jsonCard.PaymentSystem, jsonCard.Number,
-			jsonCard.Holder, strconv.Itoa(jsonCard.CVC), jsonCard.EndData.Format(layoutEndData), created.Format(layout), updated.Format(layout)}
+			jsonCard.Holder, strconv.Itoa(jsonCard.CVC), jsonCard.EndDate.Format(layouts.LayoutDate.ToString()),
+			created.Format(layouts.LayoutDateAndTime.ToString()), updated.Format(layouts.LayoutDateAndTime.ToString())}
 		*dataTblCard = append(*dataTblCard, row)
 	}
 }
@@ -79,16 +118,15 @@ func UpdateCard(node *grpc.Card, dataTblCard *[][]string, index int) {
 }
 
 func AppendLoginPassword(node *grpc.LoginPassword, dataTblLoginPassword *[][]string, jsonLoginPassword model.LoginPassword) {
-	layout := "01/02/2006 15:04:05"
 	created, _ := service.ConvertTimestampToTime(node.CreatedAt)
 	updated, _ := service.ConvertTimestampToTime(node.UpdatedAt)
 	if node.Key == string(vars.Name) {
 		row := []string{strconv.Itoa(int(node.Id)), node.Value, "", jsonLoginPassword.Login, jsonLoginPassword.Password,
-			created.Format(layout), updated.Format(layout)}
+			created.Format(layouts.LayoutDateAndTime.ToString()), updated.Format(layouts.LayoutDateAndTime.ToString())}
 		*dataTblLoginPassword = append(*dataTblLoginPassword, row)
 	} else if node.Key == string(vars.Description) {
 		row := []string{strconv.Itoa(int(node.Id)), "", node.Value, jsonLoginPassword.Login, jsonLoginPassword.Password,
-			created.Format(layout), updated.Format(layout)}
+			created.Format(layouts.LayoutDateAndTime.ToString()), updated.Format(layouts.LayoutDateAndTime.ToString())}
 		*dataTblLoginPassword = append(*dataTblLoginPassword, row)
 	}
 }

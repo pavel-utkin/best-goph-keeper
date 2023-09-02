@@ -34,9 +34,8 @@ func (m *Metadata) CreateMetadata(metadataRequest *model.CreateMetadataRequest) 
 
 func (m *Metadata) DeleteMetadata(metadataRequest model.DeleteMetadataRequest) error {
 	metadata := &model.Metadata{}
-	layout := "01/02/2006 15:04:05"
 	if err := m.db.Pool.QueryRow("UPDATE metadata SET deleted_at = $1 WHERE entity_id = $2 and type = $3 RETURNING entity_id",
-		time.Now().Format(layout),
+		time.Now(),
 		metadataRequest.EntityId,
 		metadataRequest.Type,
 	).Scan(&metadata.EntityId); err != nil {

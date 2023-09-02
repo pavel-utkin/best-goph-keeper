@@ -12,28 +12,27 @@ import (
 	"time"
 )
 
-func (c Event) EventCreateCard(name, description, password, paymentSystem, number, holder, cvc, endDate string, token model.Token) error {
-	c.logger.Info("Create card")
+func (c Event) EventUpdateCard(name, passwordSecure, paymentSystem, number, holder, cvc, endDateCard string, token model.Token) error {
+	c.logger.Info("Update Card")
 
 	intCvc, err := strconv.Atoi(cvc)
 	if err != nil {
 		c.logger.Error(err)
 		return err
 	}
-
-	timeEndDate, err := time.Parse(layouts.LayoutDate.ToString(), endDate)
+	timeEndDate, err := time.Parse(layouts.LayoutDate.ToString(), endDateCard)
 	if err != nil {
 		c.logger.Error(err)
 		return err
 	}
-	card := model.Card{Name: name, Description: description, PaymentSystem: paymentSystem, Number: number, Holder: holder, EndDate: timeEndDate, CVC: intCvc}
+	card := model.Card{PaymentSystem: paymentSystem, Number: number, Holder: holder, CVC: intCvc, EndDate: timeEndDate}
 	jsonCard, err := json.Marshal(card)
 	if err != nil {
 		c.logger.Error(err)
 		return err
 	}
 
-	secretKey := encryption.AesKeySecureRandom([]byte(password))
+	secretKey := encryption.AesKeySecureRandom([]byte(passwordSecure))
 	encryptCard, err := encryption.Encrypt(string(jsonCard), secretKey)
 	if err != nil {
 		c.logger.Error(err)
@@ -42,13 +41,13 @@ func (c Event) EventCreateCard(name, description, password, paymentSystem, numbe
 
 	createdToken, _ := service.ConvertTimeToTimestamp(token.CreatedAt)
 	endDateToken, _ := service.ConvertTimeToTimestamp(token.EndDateAt)
-	createdCard, err := c.grpc.HandleCreateCard(context.Background(),
-		&grpc.CreateCardRequest{Name: name, Description: description, Data: []byte(encryptCard),
-			AccessToken: &grpc.Token{Token: token.AccessToken, UserId: token.UserID, CreatedAt: createdToken, EndDateAt: endDateToken}})
+	updateCard, err := c.grpc.HandleUpdateCard(context.Background(), &grpc.UpdateCardRequest{Name: name, Data: []byte(encryptCard),
+		AccessToken: &grpc.Token{Token: token.AccessToken, UserId: token.UserID, CreatedAt: createdToken, EndDateAt: endDateToken}})
 	if err != nil {
 		c.logger.Error(err)
 		return err
 	}
-	c.logger.Debug(createdCard)
+
+	c.logger.Debug(updateCard)
 	return nil
 }

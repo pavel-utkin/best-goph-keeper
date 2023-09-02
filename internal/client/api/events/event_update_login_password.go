@@ -9,8 +9,8 @@ import (
 	"encoding/json"
 )
 
-func (c Event) EventCreateLoginPassword(name, description, passwordSecure, login, password string, token model.Token) error {
-	c.logger.Info("Create login password")
+func (c Event) EventUpdateLoginPassword(name, passwordSecure, login, password string, token model.Token) error {
+	c.logger.Info("Update login password")
 
 	loginPassword := model.LoginPassword{Login: login, Password: password}
 	jsonLoginPassword, err := json.Marshal(loginPassword)
@@ -25,15 +25,16 @@ func (c Event) EventCreateLoginPassword(name, description, passwordSecure, login
 		c.logger.Error(err)
 		return err
 	}
+
 	createdToken, _ := service.ConvertTimeToTimestamp(token.CreatedAt)
 	endDateToken, _ := service.ConvertTimeToTimestamp(token.EndDateAt)
-	createdLoginPassword, err := c.grpc.HandleCreateLoginPassword(context.Background(),
-		&grpc.CreateLoginPasswordRequest{Name: name, Description: description, Data: []byte(encryptLoginPassword),
-			AccessToken: &grpc.Token{Token: token.AccessToken, UserId: token.UserID, CreatedAt: createdToken, EndDateAt: endDateToken}})
+	updateLoginPassword, err := c.grpc.HandleUpdateLoginPassword(context.Background(), &grpc.UpdateLoginPasswordRequest{Name: name, Data: []byte(encryptLoginPassword),
+		AccessToken: &grpc.Token{Token: token.AccessToken, UserId: token.UserID, CreatedAt: createdToken, EndDateAt: endDateToken}})
 	if err != nil {
 		c.logger.Error(err)
 		return err
 	}
-	c.logger.Debug(createdLoginPassword.Data)
+
+	c.logger.Debug(updateLoginPassword)
 	return nil
 }
