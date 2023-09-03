@@ -46,14 +46,10 @@ func InterceptorLogger(l logrus.FieldLogger) logging.Logger {
 func main() {
 	logger := logrus.New()
 	ctx := context.Background()
-	config := config.NewConfig()
-
-	/*opts := []logging.Option{
-		logging.WithLogOnEvents(logging.StartCall, logging.FinishCall),
-	}*/
+	clientConfig := config.NewConfig()
 
 	conn, err := grpc.Dial(
-		config.GRPC,
+		clientConfig.GRPC,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithChainUnaryInterceptor(
 			logging.UnaryClientInterceptor(InterceptorLogger(logger)),
@@ -65,8 +61,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	conn, err = grpc.Dial(config.GRPC, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	gophkeeperClient := gophkeeper.NewGophkeeperClient(conn)
 	client := api.NewClient(ctx, logger, gophkeeperClient)

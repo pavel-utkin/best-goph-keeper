@@ -17,10 +17,10 @@ import (
 
 func main() {
 	logger := logrus.New()
-	config := configserver.NewConfigServer(logger)
-	logger.SetLevel(config.DebugLevel)
+	serverConfig := configserver.NewConfigServer(logger)
+	logger.SetLevel(serverConfig.DebugLevel)
 
-	db, err := database.New(config, logger)
+	db, err := database.New(serverConfig, logger)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -31,11 +31,16 @@ func main() {
 	metadataRepository := metadata.New(db)
 	tokenRepository := token.New(db)
 
-	ctx, cnl := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+	ctx, cnl := signal.NotifyContext(
+		context.Background(),
+		syscall.SIGTERM,
+		syscall.SIGINT,
+		syscall.SIGQUIT,
+	)
 	defer cnl()
 
 	handlerGrpc := grpcHandler.NewHandler(db, userRepository, textRepository, metadataRepository, tokenRepository, logger)
-	go server.StartService(handlerGrpc, config, logger)
+	go server.StartService(handlerGrpc, serverConfig, logger)
 
 	<-ctx.Done()
 	logger.Info("server shutdown on signal with:", ctx.Err())
