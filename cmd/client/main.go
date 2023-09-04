@@ -63,8 +63,8 @@ func main() {
 	}
 
 	gophkeeperClient := gophkeeper.NewGophkeeperClient(conn)
-	client := events.NewEvent(ctx, logger, gophkeeperClient)
-	_, err = client.EventPing()
+	client := events.NewEvent(ctx, config, logger, gophkeeperClient)
+	_, err = client.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}
