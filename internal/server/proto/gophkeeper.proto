@@ -7,30 +7,23 @@ package server;
 option go_package = "./gophkeeper";
 
 service Gophkeeper {
-  rpc HandlePing(PingRequest) returns (PingResponse) {}
-  rpc HandleUserExist(UserExistRequest) returns (UserExistResponse) {}
+  rpc Ping(PingRequest) returns (PingResponse) {}
+  rpc UserExist(UserExistRequest) returns (UserExistResponse) {}
 
-  rpc HandleAuthentication(AuthenticationRequest) returns (AuthenticationResponse) {}
-  rpc HandleRegistration(RegistrationRequest) returns (RegistrationResponse) {}
+  rpc Authentication(AuthenticationRequest) returns (AuthenticationResponse) {}
+  rpc Registration(RegistrationRequest) returns (RegistrationResponse) {}
 
-  rpc HandleCreateText(CreateTextRequest) returns (CreateTextResponse) {}
-  rpc HandleGetNodeText(GetNodeTextRequest) returns (GetNodeTextResponse) {}
-  rpc HandleGetListText(GetListTextRequest) returns (GetListTextResponse) {}
-  rpc HandleDeleteText(DeleteTextRequest) returns (DeleteTextResponse) {}
-  rpc HandleUpdateText(UpdateTextRequest) returns (UpdateTextResponse) {}
+  rpc FileUpload(UploadBinaryRequest) returns (UploadBinaryResponse) {}
+  rpc FileGetList(GetListBinaryRequest) returns (GetListBinaryResponse) {}
+  rpc FileRemove(DeleteBinaryRequest) returns (DeleteBinaryResponse) {}
+  rpc FileDownload(DownloadBinaryRequest) returns (DownloadBinaryResponse) {}
 
-  rpc HandleCreateCard(CreateCardRequest) returns (CreateCardResponse) {}
-  rpc HandleGetNodeCard(GetNodeCardRequest) returns (GetNodeCardResponse) {}
-  rpc HandleGetListCard(GetListCardRequest) returns (GetListCardResponse) {}
-  rpc HandleDeleteCard(DeleteCardRequest) returns (DeleteCardResponse) {}
-  rpc HandleUpdateCard(UpdateCardRequest) returns (UpdateCardResponse) {}
-
-  rpc HandleCreateLoginPassword(CreateLoginPasswordRequest) returns (CreateLoginPasswordResponse) {}
-  rpc HandleGetNodeLoginPassword(GetNodeLoginPasswordRequest) returns (GetNodeLoginPasswordResponse) {}
-  rpc HandleGetListLoginPassword(GetListLoginPasswordRequest) returns (GetListLoginPasswordResponse) {}
-  rpc HandleDeleteLoginPassword(DeleteLoginPasswordRequest) returns (DeleteLoginPasswordResponse) {}
-  rpc HandleUpdateLoginPassword(UpdateLoginPasswordRequest) returns (UpdateLoginPasswordResponse) {}
+  rpc EntityCreate(CreateEntityRequest) returns (CreateEntityResponse) {}
+  rpc EntityGetList(GetListEntityRequest) returns (GetListEntityResponse) {}
+  rpc EntityDelete(DeleteEntityRequest) returns (DeleteEntityResponse) {}
+  rpc EntityUpdate(UpdateEntityRequest) returns (UpdateEntityResponse) {}
 }
+
 //------------------------------------
 message PingRequest {}
 message PingResponse {
@@ -72,157 +65,88 @@ message UserExistResponse {
   bool exist = 1;
 }
 //------------------------------------
-message Text {
+message Binary {
   int64  id = 1;
   int64  userId = 2;
-  string key = 3;
-  string value = 4;
-  bytes data = 5;
-  google.protobuf.Timestamp createdAt = 6;
-  google.protobuf.Timestamp updatedAt = 7;
-  google.protobuf.Timestamp deletedAt = 8;
+  string name = 3;
+  google.protobuf.Timestamp createdAt = 4;
+  google.protobuf.Timestamp deletedAt = 5;
 }
-message CreateTextRequest {
-  string name = 1;
-  string description = 2;
-  bytes  text = 3;
-  Token accessToken = 4;
-}
-message CreateTextResponse {
-  Text text = 1;
-}
-message GetNodeTextRequest {
-  string name = 1;
-  Token accessToken = 2;
-}
-message GetNodeTextResponse {
-  Text text = 1;
-}
-message GetListTextRequest {
-  Token accessToken = 1;
-}
-message GetListTextResponse {
-  repeated Text node = 1;
-}
-message DeleteTextRequest {
-  string name = 1;
-  Token accessToken = 2;
-}
-message DeleteTextResponse {
-  int64  id = 1;
-}
-message UpdateTextRequest {
+message UploadBinaryRequest {
   string name = 1;
   bytes  data = 2;
+  Token  accessToken = 3;
+}
+message UploadBinaryResponse {
+  string name = 1;
+}
+message GetNodeBinaryRequest {
+  string name = 1;
+  Token accessToken = 2;
+}
+message GetNodeBinaryResponse {
+  Binary data = 1;
+}
+message GetListBinaryRequest {
+  Token accessToken = 1;
+}
+message GetListBinaryResponse {
+  repeated Binary node = 1;
+}
+message DeleteBinaryRequest {
+  string name = 1;
+  Token accessToken = 2;
+}
+message DeleteBinaryResponse {
+  int64  id = 1;
+}
+message DownloadBinaryRequest {
+  string name = 1;
   Token accessToken = 3;
 }
-message UpdateTextResponse {
+message DownloadBinaryResponse {
   int64  id = 1;
+  bytes  data = 2;
 }
 //------------------------------------
-message Card {
+message Entity {
   int64  id = 1;
   int64  userId = 2;
-  string key = 3;
-  string value = 4;
-  bytes  data = 5;
-  google.protobuf.Timestamp createdAt = 6;
-  google.protobuf.Timestamp updatedAt = 7;
-  google.protobuf.Timestamp deletedAt = 8;
-}
-message CreateCardRequest {
-  string name = 1;
-  string description = 2;
   bytes  data = 3;
-  Token  accessToken = 4;
-}
-message CreateCardResponse {
-  Card data = 1;
-}
-message GetNodeCardRequest {
-  string name = 1;
-  Token accessToken = 2;
-}
-message GetNodeCardResponse {
-  Card data = 1;
-}
-message GetListCardRequest {
-  Token accessToken = 1;
-}
-message GetListCardResponse {
-  repeated Card node = 1;
-}
-message DeleteCardRequest {
-  string name = 1;
-  Token accessToken = 2;
-}
-message DeleteCardResponse {
-  int64  id = 1;
-}
-message UpdateCardRequest {
-  string name = 1;
-  bytes  data = 2;
-  Token accessToken = 3;
-}
-message UpdateCardResponse {
-  int64  id = 1;
-}
-//------------------------------------
-message LoginPassword {
-  int64  id = 1;
-  int64  userId = 2;
-  string key = 3;
-  string value = 4;
-  bytes  data = 5;
-  google.protobuf.Timestamp createdAt = 6;
-  google.protobuf.Timestamp updatedAt = 7;
-  google.protobuf.Timestamp deletedAt = 8;
-}
-message CreateLoginPasswordRequest {
-  string name = 1;
-  string description = 2;
-  bytes  data = 3;
-  Token  accessToken = 4;
-}
-message CreateLoginPasswordResponse {
-  LoginPassword data = 1;
-}
-message GetNodeLoginPasswordRequest {
-  string name = 1;
-  Token accessToken = 2;
-}
-message GetNodeLoginPasswordResponse {
-  LoginPassword data = 1;
-}
-message GetListLoginPasswordRequest {
-  Token accessToken = 1;
-}
-message GetListLoginPasswordResponse {
-  repeated LoginPassword node = 1;
-}
-message DeleteLoginPasswordRequest {
-  string name = 1;
-  Token accessToken = 2;
-}
-message DeleteLoginPasswordResponse {
-  int64  id = 1;
-}
-message UpdateLoginPasswordRequest {
-  string name = 1;
-  bytes  data = 2;
-  Token accessToken = 3;
-}
-message UpdateLoginPasswordResponse {
-  int64  id = 1;
-}
-//------------------------------------
-message Metadata {
-  int64  entityId = 1;
-  string key = 2;
-  string value = 3;
-  string type = 4;
+  string metadata = 4;
   google.protobuf.Timestamp createdAt = 5;
   google.protobuf.Timestamp updatedAt = 6;
   google.protobuf.Timestamp deletedAt = 7;
 }
-//------------------------------------
+message CreateEntityRequest {
+  bytes data = 1;
+  string metadata = 2;
+  Token  accessToken = 3;
+}
+message CreateEntityResponse {
+  int64  id = 1;
+}
+message GetListEntityRequest {
+  string  type = 1;
+  Token accessToken = 2;
+}
+message GetListEntityResponse {
+  repeated Entity node = 1;
+}
+message DeleteEntityRequest {
+  string name = 1;
+  string  type = 2;
+  Token accessToken = 3;
+}
+message DeleteEntityResponse {
+  int64  id = 1;
+}
+message UpdateEntityRequest {
+  string name = 1;
+  string type = 2;
+  bytes  data = 3;
+  Token accessToken = 4;
+}
+message UpdateEntityResponse {
+  int64  id = 1;
+}
