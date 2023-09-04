@@ -1,17 +1,20 @@
 package form
 
-import "fyne.io/fyne/v2/widget"
+import (
+	"best-goph-keeper/internal/client/storage/labels"
+	"fyne.io/fyne/v2/widget"
+)
 
 func GetFormCard(name *widget.Entry, cardDescription *widget.Entry, paymentSystem *widget.Entry,
 	number *widget.Entry, holder *widget.Entry, endDate *widget.Entry, cvc *widget.Entry) *widget.Form {
 	formCard := widget.NewForm(
-		widget.NewFormItem("Name", name),
-		widget.NewFormItem("Description", cardDescription),
-		widget.NewFormItem("Payment System", paymentSystem),
-		widget.NewFormItem("Number", number),
-		widget.NewFormItem("Holder", holder),
-		widget.NewFormItem("End Date", endDate),
-		widget.NewFormItem("CVC", cvc),
+		widget.NewFormItem(labels.NameItem, name),
+		widget.NewFormItem(labels.DescriptionItem, cardDescription),
+		widget.NewFormItem(labels.PaymentSystemItem, paymentSystem),
+		widget.NewFormItem(labels.NumberItem, number),
+		widget.NewFormItem(labels.HolderItem, holder),
+		widget.NewFormItem(labels.EndDateItem, endDate),
+		widget.NewFormItem(labels.CVCItem, cvc),
 	)
 	return formCard
 }
