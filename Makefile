@@ -42,3 +42,10 @@ gen_protoc:
 build_app:
 	go build -o bin/client cmd/client/main.go
 	go build -o bin/server cmd/server/main.go
+
+#GOOS=linux GOARCH=amd64  go build -o bin/linux64_client cmd/client/main.go
+#GOOS=linux GOARCH=amd64  go build -o bin/linux64_server cmd/server/main.go
+#GOOS=windows GOARCH=amd64  go build -o bin/win64_client.exe cmd/client/main.go
+#GOOS=windows GOARCH=amd64  go build -o bin/win64_server.exe cmd/server/main.go
+#GOOS=darwin GOARCH=amd64 go build -o bin/mac64_client cmd/client/main.go
+#GOOS=darwin GOARCH=amd64 go build -o bin/mac64_server cmd/server/main.go

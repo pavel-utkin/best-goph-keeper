@@ -7,7 +7,7 @@ const (
 	WindowSwitcherHeight Window = 80
 	WindowAuthWidth      Window = 500
 	WindowAuthHeight     Window = 100
-	WindowMainWidth      Window = 1300
+	WindowMainWidth      Window = 1400
 	WindowMainHeight     Window = 300
 )
 

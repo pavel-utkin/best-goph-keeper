@@ -14,8 +14,20 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+# Binaries
+bin/
+cmd/client
+cmd/server
+
+# Data
+data/
+
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
 # Go workspace file
 go.work
+
+# IDEs directories
+.idea
+.vscode
