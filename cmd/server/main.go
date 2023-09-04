@@ -21,7 +21,7 @@ import (
 
 func main() {
 	logger := logrus.New()
-	serverConfig := configserver.NewConfigServer(logger)
+	serverConfig := config.NewConfig(logger)
 	logger.SetLevel(serverConfig.DebugLevel)
 
 	db, err := database.New(serverConfig, logger)
@@ -38,19 +38,19 @@ func main() {
 	entityRepository := entity.New(db)
 	tokenRepository := token.New(db)
 
-	handlerRest := resthandler.NewHandler(db, config, userRepository, tokenRepository, logger)
+	handlerRest := resthandler.NewHandler(db, serverConfig, userRepository, tokenRepository, logger)
 	routerService := router.Route(handlerRest)
 	rs := chi.NewRouter()
 	rs.Mount("/", routerService)
 
-	handlerGrpc := grpchandler.NewHandler(db, config, userRepository, binaryRepository,
+	handlerGrpc := grpchandler.NewHandler(db, serverConfig, userRepository, binaryRepository,
 		&storage, entityRepository, tokenRepository, logger)
 
 	ctx, cnl := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 	defer cnl()
 
-	go api.StartGRPCService(handlerGrpc, config, logger)
-	go api.StartRESTService(rs, config, logger)
+	go api.StartGRPCService(handlerGrpc, serverConfig, logger)
+	go api.StartRESTService(rs, serverConfig, logger)
 
 	<-ctx.Done()
 	logger.Info("server shutdown on signal with:", ctx.Err())
