@@ -42,7 +42,10 @@ func TestEvents(t *testing.T) {
 	if err != nil {
 		t.Fatalf("test containers failed: %v", err)
 	}
-	container.Start(context.Background())
+	err = container.Start(context.Background())
+	if err != nil {
+		t.Fatalf("Test containers failed: %v", err)
+	}
 	stopTime := time.Second
 	defer container.Stop(context.Background(), &stopTime)
 	databaseURI, err := container.ConnectionString(context.Background(), "sslmode=disable")

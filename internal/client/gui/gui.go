@@ -232,8 +232,7 @@ func InitGUI(log *logrus.Logger, application fyne.App, client *events.Event) {
 	//---------------------------------------------------------------------- login password event delete
 	buttonLoginPasswordDelete = widget.NewButton(labels.BtnDeleteLoginPassword, func() {
 		function.HideLabelsTab(labelAlertLoginPassword, labelAlertText, labelAlertCard, labelAlertBinary)
-		if indexTblLoginPassword > 0 {
-			client.LoginPasswordDelete(selectedRowTblLoginPassword, accessToken)
+		if indexTblLoginPassword > 0 && client.LoginPasswordDelete(selectedRowTblLoginPassword, accessToken) != nil {
 			// Удаляем строку с индексом indexTblLoginPassword
 			dataTblLoginPassword = table.RemoveRow(dataTblLoginPassword, indexTblLoginPassword)
 			indexTblLoginPassword = 0
@@ -246,8 +245,7 @@ func InitGUI(log *logrus.Logger, application fyne.App, client *events.Event) {
 	//---------------------------------------------------------------------- text event delete
 	buttonTextDelete = widget.NewButton(labels.BtnDeleteText, func() {
 		function.HideLabelsTab(labelAlertLoginPassword, labelAlertText, labelAlertCard, labelAlertBinary)
-		if indexTblText > 0 {
-			client.TextDelete(selectedRowTblText, accessToken)
+		if indexTblText > 0 && client.TextDelete(selectedRowTblText, accessToken) != nil {
 			// Удаляем строку с индексом indexTblText
 			dataTblText = table.RemoveRow(dataTblText, indexTblText)
 			indexTblText = 0
@@ -260,8 +258,7 @@ func InitGUI(log *logrus.Logger, application fyne.App, client *events.Event) {
 	//---------------------------------------------------------------------- card event delete
 	buttonCardDelete = widget.NewButton(labels.BtnDeleteCard, func() {
 		function.HideLabelsTab(labelAlertLoginPassword, labelAlertText, labelAlertCard, labelAlertBinary)
-		if indexTblCard > 0 {
-			client.CardDelete(selectedRowTblCard, accessToken)
+		if indexTblCard > 0 && client.CardDelete(selectedRowTblCard, accessToken) != nil {
 			// Удаляем строку с индексом indexTblCard
 			dataTblCard = table.RemoveRow(dataTblCard, indexTblCard)
 			indexTblCard = 0
@@ -274,8 +271,7 @@ func InitGUI(log *logrus.Logger, application fyne.App, client *events.Event) {
 	//---------------------------------------------------------------------- binary event delete
 	buttonBinaryDelete = widget.NewButton(labels.BtnDeleteBinary, func() {
 		function.HideLabelsTab(labelAlertLoginPassword, labelAlertText, labelAlertCard, labelAlertBinary)
-		if indexTblBinary > 0 {
-			client.FileRemove(selectedRowTblBinary, accessToken)
+		if indexTblBinary > 0 && client.FileRemove(selectedRowTblBinary, accessToken) != nil {
 			// Удаляем строку с индексом indexTblBinary
 			dataTblBinary = table.RemoveRow(dataTblBinary, indexTblBinary)
 			indexTblBinary = 0

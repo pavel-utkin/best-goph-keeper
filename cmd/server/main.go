@@ -35,7 +35,10 @@ func main() {
 		logger.Fatal(err)
 	} else {
 		defer db.Close()
-		db.CreateTablesMigration("file://../migrations")
+		err = db.CreateTablesMigration("file://../migrations")
+		if err != nil {
+			logger.Fatalf("Migration failed: %v", err)
+		}
 	}
 
 	userRepository := user.New(db)

@@ -45,7 +45,10 @@ func TestHandlers(t *testing.T) {
 		t.Fatalf("Test containers failed: %v", err)
 	}
 
-	container.Start(context.Background())
+	err = container.Start(context.Background())
+	if err != nil {
+		t.Fatalf("Test containers failed: %v", err)
+	}
 	stopTime := time.Second
 	defer container.Stop(context.Background(), &stopTime)
 

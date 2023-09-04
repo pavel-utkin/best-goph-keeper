@@ -48,10 +48,7 @@ func (t *Token) Validate(endDate time.Time) bool {
 	now := time.Now().Format(layouts.LayoutDateAndTime.ToString())
 	end := endDate.Format(layouts.LayoutDateAndTime.ToString())
 	valid := end > now
-	if valid {
-		return true
-	}
-	return false
+	return valid
 }
 
 func (t *Token) GetEndDateToken(accessToken string) (time.Time, error) {
