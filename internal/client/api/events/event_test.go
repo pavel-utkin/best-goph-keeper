@@ -15,6 +15,7 @@ import (
 	"best-goph-keeper/internal/server/storage/repositories/token"
 	"best-goph-keeper/internal/server/storage/repositories/user"
 	"context"
+	"crypto/rand"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/testcontainers/testcontainers-go"
@@ -53,9 +54,12 @@ func TestEvents(t *testing.T) {
 	// setting
 	logger := logrus.New()
 	db, err := database.New(&serverConfig.Config{DSN: databaseURI}, logger)
+
 	if err != nil {
 		t.Fatalf("db init failed: %v", err)
 	}
+	defer db.Close()
+	db.Ping()
 	err = db.CreateTablesMigration("file://../../../../migrations")
 	if err != nil {
 		t.Fatalf("migration failed: %v", err)
@@ -111,6 +115,7 @@ func TestEvents(t *testing.T) {
 	}
 	grpcClient := grpcKeeper.NewGophkeeperClient(connectionClient)
 	client := NewEvent(context.Background(), clientConfig, logger, grpcClient)
+	client.GetConfig()
 
 	// -- TEST DATA --
 	//(name string, description string, password string, plaintext string, token model.Token)
@@ -138,33 +143,67 @@ func TestEvents(t *testing.T) {
 	t.Run("registration", func(t *testing.T) {
 		accessToken, err = client.Registration(username, password)
 		assert.NoError(t, err, "failed registration")
-
 	})
+
 	t.Run("user exist", func(t *testing.T) {
 		_, err = client.UserExist(username)
 		assert.NoError(t, err, "failed registration")
 	})
+
+	t.Run("authentication", func(t *testing.T) {
+		_, err = client.Authentication(username, password+"wrongdata")
+		assert.Error(t, err, "failed authentication")
+	})
+
 	t.Run("authentication", func(t *testing.T) {
 		_, err = client.Authentication(username, password)
 		assert.NoError(t, err, "failed authentication")
 	})
+
+	t.Run("registration", func(t *testing.T) {
+		_, err = client.Registration(username, password)
+		assert.Error(t, err, "failed registration")
+	})
+
+	t.Run("FileUpload", func(t *testing.T) {
+		randData := make([]byte, 255)
+		rand.Read(randData)
+		_, err = client.FileUpload(name, passwordUser, randData, accessToken)
+		assert.NoError(t, err, "failed FileUpload")
+	})
+
+	t.Run("FileDownload", func(t *testing.T) {
+		err = client.FileDownload(name, passwordUser, accessToken)
+		assert.NoError(t, err, "failed FileDownload")
+	})
+
+	t.Run("FileRemove", func(t *testing.T) {
+		delRow = append(delRow, name)
+		err = client.FileRemove(delRow, accessToken)
+		assert.NoError(t, err, "failed FileRemove")
+	})
+
 	t.Run("text create", func(t *testing.T) {
 		err = client.TextCreate(name, description, password, plaintext, accessToken)
 		assert.NoError(t, err, "failed text create")
 	})
+
 	t.Run("text update", func(t *testing.T) {
 		err = client.TextUpdate(name, password, plaintext+":update", accessToken)
 		assert.NoError(t, err, "failed text update")
 	})
+
 	t.Run("text delete", func(t *testing.T) {
 		delRow = append(delRow, name)
 		err = client.TextDelete(delRow, accessToken)
 		assert.NoError(t, err, "failed text delete")
 	})
+
 	t.Run("login password create", func(t *testing.T) {
 		err = client.LoginPasswordCreate(name, description, password, loginUser, passwordUser, accessToken)
 		assert.NoError(t, err, "failed login password create")
 	})
+
 	t.Run("login password update", func(t *testing.T) {
 		err = client.LoginPasswordUpdate(name, password, loginUser+":update", passwordUser+":update", accessToken)
 		assert.NoError(t, err, "failed login password update")
@@ -187,4 +226,154 @@ func TestEvents(t *testing.T) {
 		err = client.CardDelete(delRow, accessToken)
 		assert.NoError(t, err, "failed card delete")
 	})
+	t.Run("card delete nil", func(t *testing.T) {
+		delRow = append(delRow, name)
+		accessTokenTest := model.Token{}
+		err = client.CardDelete(delRow, accessTokenTest)
+		assert.Error(t, err, "failed card delete")
+	})
+
+	t.Run("FileUpload", func(t *testing.T) {
+		randData := make([]byte, 255)
+		rand.Read(randData)
+		_, err = client.FileUpload(name, passwordUser, randData, accessToken)
+		assert.NoError(t, err, "failed FileUpload")
+	})
+
+	t.Run("text create", func(t *testing.T) {
+		err = client.TextCreate(name, description, password, plaintext, accessToken)
+		assert.NoError(t, err, "failed text create")
+	})
+
+	t.Run("login password create", func(t *testing.T) {
+		err = client.LoginPasswordCreate(name, description, password, loginUser, passwordUser, accessToken)
+		assert.NoError(t, err, "failed login password create")
+	})
+
+	t.Run("card create", func(t *testing.T) {
+		err = client.CardCreate(name, description, password, paymentSystem, numberCard, holder, cvc, endDate, accessToken)
+		assert.NoError(t, err, "failed card create")
+	})
+
+	t.Run("card create with errors", func(t *testing.T) {
+		wrongCvc := "wrongCVC"
+		err = client.CardCreate(name, description, password, paymentSystem, numberCard, holder, wrongCvc, endDate, accessToken)
+		assert.Error(t, err, "failed card create")
+	})
+
+	t.Run("card create with errors", func(t *testing.T) {
+		wrongEndDate := "wrongEndDate"
+		err = client.CardCreate(name, description, password, paymentSystem, numberCard, holder, cvc, wrongEndDate, accessToken)
+		assert.Error(t, err, "failed card create")
+	})
+
+	t.Run("card update with errors", func(t *testing.T) {
+		wrongCvc := "wrongCVC"
+		err = client.CardUpdate(name, password, paymentSystem+":update", numberCard, holder+":update", wrongCvc, endDate, accessToken)
+		assert.Error(t, err, "failed card update")
+	})
+
+	t.Run("card update with errors", func(t *testing.T) {
+		wrongEndDate := "wrongEndDate"
+		err = client.CardUpdate(name, password, paymentSystem+":update", numberCard, holder+":update", cvc, wrongEndDate, accessToken)
+		assert.Error(t, err, "failed card update")
+	})
+
+	t.Run("Synchronization", func(t *testing.T) {
+		_, _, _, _, err = client.Synchronization(password, accessToken)
+		assert.NoError(t, err, "failed Synchronization")
+	})
+
+	// test with close db
+
+	db.Close()
+
+	t.Run("ping db", func(t *testing.T) {
+		_, err = client.Ping()
+		assert.Error(t, err, "failed ping db")
+	})
+	t.Run("registration", func(t *testing.T) {
+		accessToken, err = client.Registration(username, password)
+		assert.Error(t, err, "failed registration")
+	})
+
+	t.Run("FileUpload", func(t *testing.T) {
+		randData := make([]byte, 255)
+		rand.Read(randData)
+		_, err = client.FileUpload(name, passwordUser, randData, accessToken)
+		assert.Error(t, err, "failed FileUpload")
+	})
+
+	t.Run("FileDownload", func(t *testing.T) {
+		err = client.FileDownload(name, passwordUser, accessToken)
+		assert.Error(t, err, "failed FileDownload")
+	})
+
+	t.Run("FileRemove", func(t *testing.T) {
+		delRow = append(delRow, name)
+		err = client.FileRemove(delRow, accessToken)
+		assert.Error(t, err, "failed FileRemove")
+	})
+
+	t.Run("text create", func(t *testing.T) {
+		err = client.TextCreate(name, description, password, plaintext, accessToken)
+		assert.Error(t, err, "failed text create")
+	})
+
+	t.Run("text update", func(t *testing.T) {
+		err = client.TextUpdate(name, password, plaintext+":update", accessToken)
+		assert.Error(t, err, "failed text update")
+	})
+
+	t.Run("text delete", func(t *testing.T) {
+		delRow = append(delRow, name)
+		err = client.TextDelete(delRow, accessToken)
+		assert.Error(t, err, "failed text delete")
+	})
+
+	t.Run("login password create", func(t *testing.T) {
+		err = client.LoginPasswordCreate(name, description, password, loginUser, passwordUser, accessToken)
+		assert.Error(t, err, "failed login password create")
+	})
+
+	t.Run("login password update", func(t *testing.T) {
+		err = client.LoginPasswordUpdate(name, password, loginUser+":update", passwordUser+":update", accessToken)
+		assert.Error(t, err, "failed login password update")
+	})
+	t.Run("login password delete", func(t *testing.T) {
+		delRow = append(delRow, name)
+		err = client.LoginPasswordDelete(delRow, accessToken)
+		assert.Error(t, err, "failed login password delete")
+	})
+	t.Run("card create", func(t *testing.T) {
+		err = client.CardCreate(name, description, password, paymentSystem, numberCard, holder, cvc, endDate, accessToken)
+		assert.Error(t, err, "failed card create")
+	})
+	t.Run("card update", func(t *testing.T) {
+		err = client.CardUpdate(name, password, paymentSystem+":update", numberCard, holder+":update", cvc, endDate, accessToken)
+		assert.Error(t, err, "failed card update")
+	})
+	t.Run("card delete", func(t *testing.T) {
+		delRow = append(delRow, name)
+		err = client.CardDelete(delRow, accessToken)
+		assert.Error(t, err, "failed card delete")
+	})
+
+	t.Run("FileUpload", func(t *testing.T) {
+		randData := make([]byte, 255)
+		rand.Read(randData)
+		_, err = client.FileUpload(name, passwordUser, randData, accessToken)
+		assert.Error(t, err, "failed FileUpload")
+	})
+
+	t.Run("authentication", func(t *testing.T) {
+		_, err = client.Authentication(username, password+"wrongdata")
+		assert.Error(t, err, "failed authentication")
+	})
+
+	t.Run("Synchronization", func(t *testing.T) {
+		_, _, _, _, err = client.Synchronization(password, accessToken)
+		assert.Error(t, err, "failed Synchronization")
+	})
+
 }

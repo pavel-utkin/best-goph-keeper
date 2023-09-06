@@ -49,20 +49,8 @@ func (h *Handler) Registration(ctx context.Context, req *grpc.RegistrationReques
 		)
 	}
 
-	createdToken, err := service.ConvertTimeToTimestamp(token.CreatedAt)
-	if err != nil {
-		h.logger.Error(err)
-		return &grpc.RegistrationResponse{}, status.Errorf(
-			codes.Internal, err.Error(),
-		)
-	}
-	endDateToken, err := service.ConvertTimeToTimestamp(token.EndDateAt)
-	if err != nil {
-		h.logger.Error(err)
-		return &grpc.RegistrationResponse{}, status.Errorf(
-			codes.Internal, err.Error(),
-		)
-	}
+	createdToken := service.ConvertTimeToTimestamp(token.CreatedAt)
+	endDateToken := service.ConvertTimeToTimestamp(token.EndDateAt)
 
 	err = service.CreateStorageUser(h.config.FileFolder, token.UserID)
 	if err != nil {

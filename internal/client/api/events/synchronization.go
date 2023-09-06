@@ -19,16 +19,8 @@ func (c Event) Synchronization(password string, token model.Token) ([][]string, 
 	dataTblLoginPassword := [][]string{}
 	dataTblBinary := [][]string{}
 
-	created, err := service.ConvertTimeToTimestamp(token.CreatedAt)
-	if err != nil {
-		c.logger.Error(err)
-		return dataTblText, dataTblCard, dataTblLoginPassword, dataTblBinary, err
-	}
-	endDate, err := service.ConvertTimeToTimestamp(token.EndDateAt)
-	if err != nil {
-		c.logger.Error(err)
-		return dataTblText, dataTblCard, dataTblLoginPassword, dataTblBinary, err
-	}
+	created := service.ConvertTimeToTimestamp(token.CreatedAt)
+	endDate := service.ConvertTimeToTimestamp(token.EndDateAt)
 	//-----------------------------------------------
 	var plaintext string
 	secretKey := encryption.AesKeySecureRandom([]byte(password))

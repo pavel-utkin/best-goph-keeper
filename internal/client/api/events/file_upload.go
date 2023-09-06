@@ -17,16 +17,10 @@ func (c Event) FileUpload(name string, password string, file []byte, token model
 		c.logger.Error(err)
 		return "", err
 	}
-	createdToken, err := service.ConvertTimeToTimestamp(token.CreatedAt)
-	if err != nil {
-		c.logger.Error(err)
-		return "", err
-	}
-	endDateToken, err := service.ConvertTimeToTimestamp(token.EndDateAt)
-	if err != nil {
-		c.logger.Error(err)
-		return "", err
-	}
+	createdToken := service.ConvertTimeToTimestamp(token.CreatedAt)
+
+	endDateToken := service.ConvertTimeToTimestamp(token.EndDateAt)
+	
 	uploadFile, err := c.grpc.FileUpload(context.Background(),
 		&grpc.UploadBinaryRequest{Name: name, Data: []byte(encryptFile),
 			AccessToken: &grpc.Token{Token: token.AccessToken, UserId: token.UserID,

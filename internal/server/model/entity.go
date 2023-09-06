@@ -37,14 +37,8 @@ func GetListEntity(data []Entity) ([]*grpc.Entity, error) {
 		if err != nil {
 			return items, err
 		}
-		created, err := service.ConvertTimeToTimestamp(data[i].CreatedAt)
-		if err != nil {
-			return items, err
-		}
-		updated, err := service.ConvertTimeToTimestamp(data[i].UpdatedAt)
-		if err != nil {
-			return items, err
-		}
+		created := service.ConvertTimeToTimestamp(data[i].CreatedAt)
+		updated := service.ConvertTimeToTimestamp(data[i].UpdatedAt)
 		items[i] = &grpc.Entity{Id: data[i].ID, UserId: data[i].UserID, Data: data[i].Data,
 			Metadata: string(jsonMetadata), CreatedAt: created, UpdatedAt: updated}
 	}

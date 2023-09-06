@@ -24,7 +24,7 @@ type FileRequest struct {
 func GetListFile(binary []File) []*grpc.Binary {
 	items := make([]*grpc.Binary, len(binary))
 	for i := range binary {
-		created, _ := service.ConvertTimeToTimestamp(binary[i].CreatedAt)
+		created := service.ConvertTimeToTimestamp(binary[i].CreatedAt)
 		items[i] = &grpc.Binary{Id: binary[i].ID, Name: binary[i].Name, CreatedAt: created}
 	}
 	return items

@@ -12,16 +12,8 @@ func (c Event) FileDownload(name string, password string, token model.Token) err
 	c.logger.Info("file download")
 
 	secretKey := encryption.AesKeySecureRandom([]byte(password))
-	createdToken, err := service.ConvertTimeToTimestamp(token.CreatedAt)
-	if err != nil {
-		c.logger.Error(err)
-		return err
-	}
-	endDateToken, err := service.ConvertTimeToTimestamp(token.EndDateAt)
-	if err != nil {
-		c.logger.Error(err)
-		return err
-	}
+	createdToken := service.ConvertTimeToTimestamp(token.CreatedAt)
+	endDateToken := service.ConvertTimeToTimestamp(token.EndDateAt)
 
 	downloadFile, err := c.grpc.FileDownload(context.Background(),
 		&grpc.DownloadBinaryRequest{Name: name, AccessToken: &grpc.Token{Token: token.AccessToken, UserId: token.UserID,

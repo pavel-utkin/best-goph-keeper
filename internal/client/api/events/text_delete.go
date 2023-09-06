@@ -11,16 +11,9 @@ import (
 func (c Event) TextDelete(text []string, token model.Token) error {
 	c.logger.Info("text delete")
 
-	createdToken, err := service.ConvertTimeToTimestamp(token.CreatedAt)
-	if err != nil {
-		c.logger.Error(err)
-		return err
-	}
-	endDateToken, err := service.ConvertTimeToTimestamp(token.EndDateAt)
-	if err != nil {
-		c.logger.Error(err)
-		return err
-	}
+	createdToken := service.ConvertTimeToTimestamp(token.CreatedAt)
+
+	endDateToken := service.ConvertTimeToTimestamp(token.EndDateAt)
 
 	deletedTextEntityID, err := c.grpc.EntityDelete(context.Background(),
 		&grpc.DeleteEntityRequest{Name: text[0], Type: vars.Text.ToString(),

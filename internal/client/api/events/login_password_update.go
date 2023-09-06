@@ -26,16 +26,9 @@ func (c Event) LoginPasswordUpdate(name, passwordSecure, login, password string,
 		c.logger.Error(err)
 		return err
 	}
-	createdToken, err := service.ConvertTimeToTimestamp(token.CreatedAt)
-	if err != nil {
-		c.logger.Error(err)
-		return err
-	}
-	endDateToken, err := service.ConvertTimeToTimestamp(token.EndDateAt)
-	if err != nil {
-		c.logger.Error(err)
-		return err
-	}
+	createdToken := service.ConvertTimeToTimestamp(token.CreatedAt)
+
+	endDateToken := service.ConvertTimeToTimestamp(token.EndDateAt)
 
 	updatedLoginPasswordEntityID, err := c.grpc.EntityUpdate(context.Background(),
 		&grpc.UpdateEntityRequest{Name: name, Data: []byte(encryptLoginPassword), Type: vars.LoginPassword.ToString(),

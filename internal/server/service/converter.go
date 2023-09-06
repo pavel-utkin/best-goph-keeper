@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-func ConvertTimeToTimestamp(t time.Time) (*timestamp.Timestamp, error) {
-	return timestamppb.New(t), nil
+func ConvertTimeToTimestamp(t time.Time) *timestamp.Timestamp {
+	return timestamppb.New(t)
 }
 
 func ConvertTimestampToTime(ts *timestamp.Timestamp) (time.Time, error) {

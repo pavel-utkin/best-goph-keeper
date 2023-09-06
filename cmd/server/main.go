@@ -4,7 +4,6 @@ import (
 	"best-goph-keeper/internal/server/api"
 	grpchandler "best-goph-keeper/internal/server/api/grpc"
 	resthandler "best-goph-keeper/internal/server/api/rest"
-	"best-goph-keeper/internal/server/api/router"
 	"best-goph-keeper/internal/server/config"
 	"best-goph-keeper/internal/server/database"
 	"best-goph-keeper/internal/server/storage"
@@ -35,7 +34,7 @@ func main() {
 		logger.Fatal(err)
 	} else {
 		defer db.Close()
-		err = db.CreateTablesMigration("file://../migrations")
+		err = db.CreateTablesMigration("file://migrations")
 		if err != nil {
 			logger.Fatalf("Migration failed: %v", err)
 		}
@@ -48,7 +47,7 @@ func main() {
 	tokenRepository := token.New(db)
 
 	handlerRest := resthandler.NewHandler(db, serverConfig, userRepository, tokenRepository, logger)
-	routerService := router.Route(handlerRest)
+	routerService := resthandler.Route(handlerRest)
 	rs := chi.NewRouter()
 	rs.Mount("/", routerService)
 

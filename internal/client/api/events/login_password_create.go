@@ -26,16 +26,9 @@ func (c Event) LoginPasswordCreate(name, description, passwordSecure, login, pas
 		c.logger.Error(err)
 		return err
 	}
-	createdToken, err := service.ConvertTimeToTimestamp(token.CreatedAt)
-	if err != nil {
-		c.logger.Error(err)
-		return err
-	}
-	endDateToken, err := service.ConvertTimeToTimestamp(token.EndDateAt)
-	if err != nil {
-		c.logger.Error(err)
-		return err
-	}
+	createdToken := service.ConvertTimeToTimestamp(token.CreatedAt)
+
+	endDateToken := service.ConvertTimeToTimestamp(token.EndDateAt)
 
 	metadata := model.MetadataEntity{Name: name, Description: description, Type: vars.LoginPassword.ToString()}
 	jsonMetadata, err := json.Marshal(metadata)

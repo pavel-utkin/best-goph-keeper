@@ -1,12 +1,11 @@
-package router
+package resthandler
 
 import (
-	resthandler "best-goph-keeper/internal/server/api/rest"
 	"github.com/go-chi/chi/v5"
 )
 
 // Route - setting service routes
-func Route(s *resthandler.Handler) *chi.Mux {
+func Route(s *Handler) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Route("/api", func(r chi.Router) {
