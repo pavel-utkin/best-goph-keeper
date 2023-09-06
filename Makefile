@@ -6,6 +6,18 @@ up:
 dev-up:
 	docker-compose -f docker-compose.yaml up
 
+.PHONY: migrate-create
+migrate-create:
+	migrate create -ext sql -seq -dir ./migrations name
+
+.PHONY: migrate-up
+migrate-up:
+	migrate -source file://./migrations -database 'postgres://postgres:password@localhost:5432/gophkeeper?sslmode=disable' up 4
+
+.PHONY: migrate-down
+migrate-down:
+	migrate -source file://./migrations -database 'postgres://postgres:password@localhost:5432/gophkeeper?sslmode=disable' down 4
+
 #docs url - http://localhost:6060/pkg/?m=all
 .PHONY: run_godoc
 run_godoc:
