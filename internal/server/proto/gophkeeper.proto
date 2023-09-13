@@ -7,14 +7,23 @@ package server;
 option go_package = "./gophkeeper";
 
 service Gophkeeper {
-  rpc HandleAuthentication(AuthenticationRequest) returns (AuthenticationResponse) {}
-  rpc HandleRegistration(RegistrationRequest) returns (RegistrationResponse) {}
-  rpc HandleCreateText(CreateTextRequest) returns (CreateTextResponse) {}
-  rpc HandleGetListText(GetListTextRequest) returns (GetListTextResponse) {}
-  rpc HandleGetNodeText(GetNodeTextRequest) returns (GetNodeTextResponse) {}
-  rpc HandlePing(PingRequest) returns (PingResponse) {}
-  rpc HandleUserExist(UserExistRequest) returns (UserExistResponse) {}
+  rpc Ping(PingRequest) returns (PingResponse) {}
+  rpc UserExist(UserExistRequest) returns (UserExistResponse) {}
+
+  rpc Authentication(AuthenticationRequest) returns (AuthenticationResponse) {}
+  rpc Registration(RegistrationRequest) returns (RegistrationResponse) {}
+
+  rpc FileUpload(UploadBinaryRequest) returns (UploadBinaryResponse) {}
+  rpc FileGetList(GetListBinaryRequest) returns (GetListBinaryResponse) {}
+  rpc FileRemove(DeleteBinaryRequest) returns (DeleteBinaryResponse) {}
+  rpc FileDownload(DownloadBinaryRequest) returns (DownloadBinaryResponse) {}
+
+  rpc EntityCreate(CreateEntityRequest) returns (CreateEntityResponse) {}
+  rpc EntityGetList(GetListEntityRequest) returns (GetListEntityResponse) {}
+  rpc EntityDelete(DeleteEntityRequest) returns (DeleteEntityResponse) {}
+  rpc EntityUpdate(UpdateEntityRequest) returns (UpdateEntityResponse) {}
 }
+
 //------------------------------------
 message PingRequest {}
 message PingResponse {
@@ -56,46 +65,88 @@ message UserExistResponse {
   bool exist = 1;
 }
 //------------------------------------
-message Text {
+message Binary {
   int64  id = 1;
   int64  userId = 2;
-  string key = 3;
-  string value = 4;
-  bytes text = 5;
-  google.protobuf.Timestamp createdAt = 6;
-  google.protobuf.Timestamp updatedAt = 7;
-  google.protobuf.Timestamp deletedAt = 8;
+  string name = 3;
+  google.protobuf.Timestamp createdAt = 4;
+  google.protobuf.Timestamp deletedAt = 5;
 }
-message CreateTextRequest {
+message UploadBinaryRequest {
   string name = 1;
-  string description = 2;
-  bytes  text = 3;
-  Token accessToken = 4;
+  bytes  data = 2;
+  Token  accessToken = 3;
 }
-message CreateTextResponse {
-  Text text = 1;
+message UploadBinaryResponse {
+  string name = 1;
 }
-message GetNodeTextRequest {
+message GetNodeBinaryRequest {
   string name = 1;
   Token accessToken = 2;
 }
-message GetNodeTextResponse {
-  Text text = 1;
+message GetNodeBinaryResponse {
+  Binary data = 1;
 }
-message GetListTextRequest {
+message GetListBinaryRequest {
   Token accessToken = 1;
 }
-message GetListTextResponse {
-  repeated Text node = 1;
+message GetListBinaryResponse {
+  repeated Binary node = 1;
+}
+message DeleteBinaryRequest {
+  string name = 1;
+  Token accessToken = 2;
+}
+message DeleteBinaryResponse {
+  int64  id = 1;
+}
+message DownloadBinaryRequest {
+  string name = 1;
+  Token accessToken = 3;
+}
+message DownloadBinaryResponse {
+  int64  id = 1;
+  bytes  data = 2;
 }
 //------------------------------------
-message Metadata {
-  int64  entityId = 1;
-  string key = 2;
-  string value = 3;
-  string type = 4;
+message Entity {
+  int64  id = 1;
+  int64  userId = 2;
+  bytes  data = 3;
+  string metadata = 4;
   google.protobuf.Timestamp createdAt = 5;
   google.protobuf.Timestamp updatedAt = 6;
   google.protobuf.Timestamp deletedAt = 7;
 }
-//------------------------------------
+message CreateEntityRequest {
+  bytes data = 1;
+  string metadata = 2;
+  Token  accessToken = 3;
+}
+message CreateEntityResponse {
+  int64  id = 1;
+}
+message GetListEntityRequest {
+  string  type = 1;
+  Token accessToken = 2;
+}
+message GetListEntityResponse {
+  repeated Entity node = 1;
+}
+message DeleteEntityRequest {
+  string name = 1;
+  string  type = 2;
+  Token accessToken = 3;
+}
+message DeleteEntityResponse {
+  int64  id = 1;
+}
+message UpdateEntityRequest {
+  string name = 1;
+  string type = 2;
+  bytes  data = 3;
+  Token accessToken = 4;
+}
+message UpdateEntityResponse {
+  int64  id = 1;
+}

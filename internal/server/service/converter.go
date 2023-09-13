@@ -1,23 +1,19 @@
 package service
 
 import (
-	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
 
-func ConvertTimeToTimestamp(t time.Time) (*timestamp.Timestamp, error) {
-	ts, err := ptypes.TimestampProto(t)
-	if err != nil {
-		return nil, err
-	}
-	return ts, nil
+func ConvertTimeToTimestamp(t time.Time) *timestamp.Timestamp {
+	return timestamppb.New(t)
 }
 
 func ConvertTimestampToTime(ts *timestamp.Timestamp) (time.Time, error) {
-	t, err := ptypes.Timestamp(ts)
+	err := ts.CheckValid()
 	if err != nil {
 		return time.Time{}, err
 	}
-	return t, nil
+	return ts.AsTime(), nil
 }

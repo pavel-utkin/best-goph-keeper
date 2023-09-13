@@ -1,14 +1,13 @@
 package main
 
 import (
-	"best-goph-keeper/internal/client/api"
+	"best-goph-keeper/internal/client/api/events"
 	"best-goph-keeper/internal/client/config"
 	"best-goph-keeper/internal/client/gui"
 	gophkeeper "best-goph-keeper/internal/server/proto"
 	"context"
 	"fmt"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/theme"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -43,6 +42,12 @@ func InterceptorLogger(l logrus.FieldLogger) logging.Logger {
 	})
 }
 
+// @Title Password Manager best-goph-keeper
+// @Description GophKeeper is a client-server system that allows the user to safely and securely store logins, passwords, binary data and other private information.
+// @Version 1.0
+
+// @Contact.email pavel@utkin-pro.ru
+
 func main() {
 	logger := logrus.New()
 	ctx := context.Background()
@@ -63,12 +68,11 @@ func main() {
 	}
 
 	gophkeeperClient := gophkeeper.NewGophkeeperClient(conn)
-	client := api.NewClient(ctx, logger, gophkeeperClient)
+	client := events.NewEvent(ctx, clientConfig, logger, gophkeeperClient)
 	_, err = client.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}
 	application := app.New()
-	application.Settings().SetTheme(theme.LightTheme())
 	gui.InitGUI(logger, application, client)
 }

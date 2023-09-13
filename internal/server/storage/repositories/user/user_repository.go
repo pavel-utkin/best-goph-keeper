@@ -1,10 +1,11 @@
 package user
 
 import (
-	"best-goph-keeper/internal/database"
+	"best-goph-keeper/internal/server/database"
 	"best-goph-keeper/internal/server/model"
-	"best-goph-keeper/internal/server/storage/errors"
+	custom_errors "best-goph-keeper/internal/server/storage/errors"
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -39,14 +40,14 @@ func (u *User) Registration(user *model.UserRequest) (*model.User, error) {
 
 func (u *User) Authentication(userRequest *model.UserRequest) (*model.User, error) {
 	authenticatedUser := &model.User{}
-	err := u.db.Pool.QueryRow("SELECT user_id, username FROM users WHERE username=$1 and password=$2",
+	err := u.db.Pool.QueryRow("SELECT user_id, username FROM users WHERE username=$1 and password=$2 and deleted_at IS NULL",
 		userRequest.Username, userRequest.Password).Scan(
 		&authenticatedUser.ID,
 		&authenticatedUser.Username,
 	)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrWrongUsernameOrPassword
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, custom_errors.ErrWrongUsernameOrPassword
 		} else {
 			return nil, err
 		}
@@ -61,4 +62,60 @@ func (u *User) UserExists(username string) (bool, error) {
 		return exists, err
 	}
 	return exists, nil
+}
+
+func (u *User) UserList() ([]model.GetAllUsers, error) {
+	users := []model.GetAllUsers{}
+	rows, err := u.db.Pool.Query("SELECT username, deleted_at FROM users")
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return users, custom_errors.ErrRecordNotFound
+		} else {
+			return users, err
+		}
+	}
+	defer rows.Close()
+	for rows.Next() {
+		user := model.GetAllUsers{}
+
+		err = rows.Scan(&user.Username, &user.DeletedAt)
+		if err != nil {
+			return users, err
+		}
+		users = append(users, user)
+	}
+	return users, nil
+}
+
+func (u *User) Block(username string) (int64, error) {
+	var id int64
+	if err := u.db.Pool.QueryRow("UPDATE users SET deleted_at = $1 "+
+		"where username = $2 RETURNING user_id",
+		time.Now(),
+		username,
+	).Scan(&id); err != nil {
+		return id, err
+	}
+	return id, nil
+}
+
+func (u *User) Unblock(username string) (int64, error) {
+	var id int64
+	if err := u.db.Pool.QueryRow("UPDATE users SET deleted_at = null "+
+		"where username = $1 RETURNING user_id",
+		username,
+	).Scan(&id); err != nil {
+		return id, err
+	}
+	return id, nil
+}
+
+func (u *User) GetUserID(username string) (int64, error) {
+	var id int64
+	if err := u.db.Pool.QueryRow("SELECT user_id FROM users where username = $1",
+		username,
+	).Scan(&id); err != nil {
+		return id, err
+	}
+	return id, nil
 }
