@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/theme"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -75,6 +74,5 @@ func main() {
 		log.Fatal(err)
 	}
 	application := app.New()
-	application.Settings().SetTheme(theme.LightTheme())
 	gui.InitGUI(logger, application, client)
 }

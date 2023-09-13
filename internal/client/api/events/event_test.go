@@ -59,7 +59,10 @@ func TestEvents(t *testing.T) {
 		t.Fatalf("db init failed: %v", err)
 	}
 	defer db.Close()
-	db.Ping()
+	err = db.Ping()
+	if err != nil {
+		t.Fatalf("Ping failed: %v", err)
+	}
 	err = db.CreateTablesMigration("file://../../../../migrations")
 	if err != nil {
 		t.Fatalf("migration failed: %v", err)
@@ -167,7 +170,8 @@ func TestEvents(t *testing.T) {
 
 	t.Run("FileUpload", func(t *testing.T) {
 		randData := make([]byte, 255)
-		rand.Read(randData)
+		_, err = rand.Read(randData)
+		assert.NoError(t, err, "failed rand.Read")
 		_, err = client.FileUpload(name, passwordUser, randData, accessToken)
 		assert.NoError(t, err, "failed FileUpload")
 	})
@@ -235,7 +239,8 @@ func TestEvents(t *testing.T) {
 
 	t.Run("FileUpload", func(t *testing.T) {
 		randData := make([]byte, 255)
-		rand.Read(randData)
+		_, err = rand.Read(randData)
+		assert.NoError(t, err, "failed rand.Read")
 		_, err = client.FileUpload(name, passwordUser, randData, accessToken)
 		assert.NoError(t, err, "failed FileUpload")
 	})
@@ -299,7 +304,8 @@ func TestEvents(t *testing.T) {
 
 	t.Run("FileUpload", func(t *testing.T) {
 		randData := make([]byte, 255)
-		rand.Read(randData)
+		_, err = rand.Read(randData)
+		assert.NoError(t, err, "failed rand.Read")
 		_, err = client.FileUpload(name, passwordUser, randData, accessToken)
 		assert.Error(t, err, "failed FileUpload")
 	})
@@ -361,7 +367,8 @@ func TestEvents(t *testing.T) {
 
 	t.Run("FileUpload", func(t *testing.T) {
 		randData := make([]byte, 255)
-		rand.Read(randData)
+		_, err = rand.Read(randData)
+		assert.NoError(t, err, "failed rand.Read")
 		_, err = client.FileUpload(name, passwordUser, randData, accessToken)
 		assert.Error(t, err, "failed FileUpload")
 	})

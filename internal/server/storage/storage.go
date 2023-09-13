@@ -1,6 +1,6 @@
 package storage
 
-import "io/ioutil"
+import "os"
 
 type Manager interface {
 	Store(file *File) error
@@ -19,7 +19,7 @@ func New(dir string) Storage {
 }
 
 func (s Storage) Store(file *File) error {
-	if err := ioutil.WriteFile(s.dir+file.name, file.buffer.Bytes(), 0644); err != nil {
+	if err := os.WriteFile(s.dir+file.name, file.buffer.Bytes(), 0644); err != nil {
 		return err
 	}
 
