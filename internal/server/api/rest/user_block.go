@@ -22,5 +22,5 @@ func (s Handler) UserBlock(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s.log.Info(userID)
-	http.Redirect(w, r, r.Header.Get("Referer"), 302)
+	http.Redirect(w, r, r.Header.Get("Referer"), http.StatusFound)
 }

@@ -16,5 +16,5 @@ func (s Handler) UserUnblock(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s.log.Info(index)
-	http.Redirect(w, r, r.Header.Get("Referer"), 302)
+	http.Redirect(w, r, r.Header.Get("Referer"), http.StatusFound)
 }

@@ -53,7 +53,7 @@ func (h *Handler) EntityCreate(ctx context.Context, req *grpc.CreateEntityReques
 			codes.Internal, err.Error(),
 		)
 	}
-	if exists == true {
+	if exists {
 		err = errors.ErrNameAlreadyExists
 		h.logger.Error(err)
 		return &grpc.CreateEntityResponse{}, status.Errorf(

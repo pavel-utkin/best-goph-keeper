@@ -14,7 +14,6 @@ import (
 
 type DB struct {
 	Pool *sql.DB
-	log  *logrus.Logger
 }
 
 func New(config *config.Config, log *logrus.Logger) (*DB, error) {
@@ -22,6 +21,8 @@ func New(config *config.Config, log *logrus.Logger) (*DB, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	log.Info("Connect to DB")
 
 	ctx, cnl := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cnl()

@@ -47,10 +47,11 @@ func TestEvents(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Test containers failed: %v", err)
 	}
-	stopTime := time.Second
-	defer container.Stop(context.Background(), &stopTime)
-	databaseURI, err := container.ConnectionString(context.Background(), "sslmode=disable")
 
+	databaseURI, err := container.ConnectionString(context.Background(), "sslmode=disable")
+	if err != nil {
+		t.Fatalf("container connection failed: %v", err)
+	}
 	// setting
 	logger := logrus.New()
 	db, err := database.New(&serverConfig.Config{DSN: databaseURI}, logger)
@@ -98,13 +99,16 @@ func TestEvents(t *testing.T) {
 		log.Fatalln(err)
 	}
 	s := grpc.NewServer()
-	grpcKeeper.RegisterGophkeeperServer(s, &handlerGrpc)
+	t.Run("registration gophkeeper-server", func(t *testing.T) {
+		grpcKeeper.RegisterGophkeeperServer(s, &handlerGrpc)
+		go func() {
+			if err = s.Serve(lis); err != nil {
+				t.Errorf("server exited with error: %v", err)
+				return
+			}
+		}()
+	})
 
-	go func() {
-		if err = s.Serve(lis); err != nil {
-			t.Fatalf("server exited with error: %v", err)
-		}
-	}()
 	connectionServer, err := grpc.Dial(serverConfig.AddressGRPC, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fatalf("connection server with error: %v", err)
@@ -383,4 +387,9 @@ func TestEvents(t *testing.T) {
 		assert.Error(t, err, "failed Synchronization")
 	})
 
+	stopTime := time.Second
+	err = container.Stop(context.Background(), &stopTime)
+	if err != nil {
+		t.Fatalf("container stop failed: %v", err)
+	}
 }

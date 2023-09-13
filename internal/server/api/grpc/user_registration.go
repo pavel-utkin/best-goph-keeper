@@ -25,7 +25,7 @@ func (h *Handler) Registration(ctx context.Context, req *grpc.RegistrationReques
 			codes.Internal, err.Error(),
 		)
 	}
-	if exists == true {
+	if exists {
 		err = errors.ErrUsernameAlreadyExists
 		h.logger.Error(err)
 		return &grpc.RegistrationResponse{}, status.Errorf(

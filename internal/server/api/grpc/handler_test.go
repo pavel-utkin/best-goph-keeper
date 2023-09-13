@@ -49,11 +49,11 @@ func TestHandlers(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Test containers failed: %v", err)
 	}
-	stopTime := time.Second
-	defer container.Stop(context.Background(), &stopTime)
 
 	databaseURI, err := container.ConnectionString(context.Background(), "sslmode=disable")
-
+	if err != nil {
+		t.Fatalf("container connection failed: %v", err)
+	}
 	logger := logrus.New()
 	db, err := database.New(&serverConfig.Config{DSN: databaseURI}, logger)
 	if err != nil {
@@ -86,13 +86,16 @@ func TestHandlers(t *testing.T) {
 
 	lis = bufconn.Listen(bufSize)
 	s := grpc.NewServer()
-	grpcKeeper.RegisterGophkeeperServer(s, &handlerGrpc)
+	t.Run("registration gophkeeper-server", func(t *testing.T) {
+		grpcKeeper.RegisterGophkeeperServer(s, &handlerGrpc)
 
-	go func() {
-		if err := s.Serve(lis); err != nil {
-			t.Fatalf("Server exited with error: %v", err)
-		}
-	}()
+		go func() {
+			if err := s.Serve(lis); err != nil {
+				t.Errorf("Server exited with error: %v", err)
+				return
+			}
+		}()
+	})
 
 	// -- TEST DATA --
 	var authenticatedUser *grpcKeeper.AuthenticationResponse
@@ -145,8 +148,9 @@ func TestHandlers(t *testing.T) {
 	t.Run("authentication and block user", func(t *testing.T) {
 		blockedUser, err = handlerGrpc.Authentication(context.Background(),
 			&grpcKeeper.AuthenticationRequest{Username: blockedusername, Password: blockedpassword})
-		handlerGrpc.token.Block(blockedUser.AccessToken.Token)
 		assert.NoError(t, err, "authentication failed")
+		_, err = handlerGrpc.token.Block(blockedUser.AccessToken.Token)
+		assert.NoError(t, err, "block failed")
 	})
 
 	t.Run("FileUpload with blockedUser", func(t *testing.T) {
@@ -412,4 +416,10 @@ func TestHandlers(t *testing.T) {
 		authenticatedUser, err = handlerGrpc.Authentication(context.Background(), &grpcKeeper.AuthenticationRequest{Username: username, Password: password})
 		assert.Error(t, err, "authentication failed")
 	})
+
+	stopTime := time.Second
+	err = container.Stop(context.Background(), &stopTime)
+	if err != nil {
+		t.Fatalf("container stop failed: %v", err)
+	}
 }

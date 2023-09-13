@@ -18,5 +18,5 @@ func (s Handler) TokenBlock(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s.log.Info(accessToken)
-	http.Redirect(w, r, r.Header.Get("Referer"), 302)
+	http.Redirect(w, r, r.Header.Get("Referer"), http.StatusFound)
 }

@@ -52,10 +52,11 @@ func TestRest(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Test containers failed: %v", err)
 	}
-	stopTime := time.Second
-	defer container.Stop(context.Background(), &stopTime)
 
 	databaseURI, err := container.ConnectionString(context.Background(), "sslmode=disable")
+	if err != nil {
+		t.Fatalf("container connection failed: %v", err)
+	}
 
 	logger := logrus.New()
 
@@ -98,15 +99,17 @@ func TestRest(t *testing.T) {
 
 	lis = bufconn.Listen(bufSize)
 	s := grpc.NewServer()
-	grpcKeeper.RegisterGophkeeperServer(s, &handlerGrpc)
+	t.Run("registration gophkeeper-server", func(t *testing.T) {
+		grpcKeeper.RegisterGophkeeperServer(s, &handlerGrpc)
+		go api.StartRESTService(rs, serverCnfg, logger)
 
-	go api.StartRESTService(rs, serverCnfg, logger)
-
-	go func() {
-		if err := s.Serve(lis); err != nil {
-			t.Fatalf("Server exited with error: %v", err)
-		}
-	}()
+		go func() {
+			if err := s.Serve(lis); err != nil {
+				t.Errorf("Server exited with error: %v", err)
+				return
+			}
+		}()
+	})
 
 	var authenticatedUser *grpcKeeper.AuthenticationResponse
 	username := randomizer.RandStringRunes(10)
@@ -157,5 +160,11 @@ func TestRest(t *testing.T) {
 
 	if _, err := http.Get("http://" + serverCnfg.AddressREST + "/api/token/" + username); err != nil {
 		t.Errorf("http.Post : %v", err)
+	}
+
+	stopTime := time.Second
+	err = container.Stop(context.Background(), &stopTime)
+	if err != nil {
+		t.Fatalf("container stop failed: %v", err)
 	}
 }

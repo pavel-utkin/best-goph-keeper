@@ -38,7 +38,7 @@ func (h *Handler) FileDownload(ctx context.Context, req *grpc.DownloadBinaryRequ
 			codes.Internal, err.Error(),
 		)
 	}
-	if exists != true {
+	if !exists {
 		err = errors.ErrFileNotExists
 		h.logger.Error(err)
 		return &grpc.DownloadBinaryResponse{}, status.Errorf(

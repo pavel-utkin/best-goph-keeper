@@ -38,7 +38,7 @@ func (h *Handler) FileUpload(ctx context.Context, req *grpc.UploadBinaryRequest)
 			codes.Internal, err.Error(),
 		)
 	}
-	if exists == true {
+	if exists {
 		err = errors.ErrNameAlreadyExists
 		h.logger.Error(err)
 		return &grpc.UploadBinaryResponse{}, status.Errorf(
