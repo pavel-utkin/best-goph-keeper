@@ -7,6 +7,7 @@ import (
 	"best-goph-keeper/internal/server/service"
 )
 
+// Authentication - auth user and return token
 func (c Event) Authentication(username, password string) (model.Token, error) {
 	c.logger.Info("authentication")
 

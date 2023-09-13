@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 )
 
+// LoginPasswordUpdate - update login-password
 func (c Event) LoginPasswordUpdate(name, passwordSecure, login, password string, token model.Token) error {
 	c.logger.Info("login password update")
 

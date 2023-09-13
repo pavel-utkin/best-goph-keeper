@@ -7,6 +7,7 @@ import (
 	"context"
 )
 
+// FileRemove - delete file
 func (c Event) FileRemove(binary []string, token model.Token) error {
 	c.logger.Info("file remove")
 

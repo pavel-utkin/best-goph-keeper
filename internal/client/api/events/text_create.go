@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 )
 
+// TextCreate - add text
 func (c Event) TextCreate(name, description, password, plaintext string, token model.Token) error {
 	c.logger.Info("text create")
 

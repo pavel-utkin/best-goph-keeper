@@ -8,6 +8,7 @@ import (
 	"context"
 )
 
+// CardDelete -  delete card
 func (c Event) CardDelete(card []string, token model.Token) error {
 	c.logger.Info("card delete")
 

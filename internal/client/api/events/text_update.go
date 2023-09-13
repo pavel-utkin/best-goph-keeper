@@ -9,6 +9,7 @@ import (
 	"context"
 )
 
+// TextUpdate - update text
 func (c Event) TextUpdate(name, passwordSecure, text string, token model.Token) error {
 	c.logger.Info("text update")
 

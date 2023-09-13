@@ -8,6 +8,7 @@ import (
 	"context"
 )
 
+// FileDownload - download file
 func (c Event) FileDownload(name string, password string, token model.Token) error {
 	c.logger.Info("file download")
 

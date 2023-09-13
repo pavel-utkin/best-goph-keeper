@@ -8,6 +8,7 @@ import (
 	"context"
 )
 
+// LoginPasswordDelete - delete login-password
 func (c Event) LoginPasswordDelete(loginPassword []string, token model.Token) error {
 	c.logger.Info("login password delete")
 

@@ -8,6 +8,7 @@ import (
 	"context"
 )
 
+// FileUpload - upload file
 func (c Event) FileUpload(name string, password string, file []byte, token model.Token) (string, error) {
 	c.logger.Info("file upload")
 
@@ -20,7 +21,7 @@ func (c Event) FileUpload(name string, password string, file []byte, token model
 	createdToken := service.ConvertTimeToTimestamp(token.CreatedAt)
 
 	endDateToken := service.ConvertTimeToTimestamp(token.EndDateAt)
-	
+
 	uploadFile, err := c.grpc.FileUpload(context.Background(),
 		&grpc.UploadBinaryRequest{Name: name, Data: []byte(encryptFile),
 			AccessToken: &grpc.Token{Token: token.AccessToken, UserId: token.UserID,

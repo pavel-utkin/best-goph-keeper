@@ -13,6 +13,7 @@ import (
 	"time"
 )
 
+// CardCreate - create card
 func (c Event) CardCreate(name, description, password, paymentSystem, number, holder, cvc, endDate string, token model.Token) error {
 	c.logger.Info("card create ")
 

@@ -2,6 +2,7 @@ package events
 
 import grpc "best-goph-keeper/internal/server/proto"
 
+// UserExist - check if user exist in db
 func (c Event) UserExist(username string) (bool, error) {
 	c.logger.Info("user exist check")
 

@@ -8,6 +8,7 @@ import (
 	"context"
 )
 
+// TextDelete - delete text
 func (c Event) TextDelete(text []string, token model.Token) error {
 	c.logger.Info("text delete")
 

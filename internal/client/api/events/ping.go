@@ -2,6 +2,7 @@ package events
 
 import grpc "best-goph-keeper/internal/server/proto"
 
+// Ping - ping
 func (c Event) Ping() (string, error) {
 	c.logger.Info("ping")
 

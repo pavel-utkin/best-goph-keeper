@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 )
 
+// LoginPasswordCreate - add login-password
 func (c Event) LoginPasswordCreate(name, description, passwordSecure, login, password string, token model.Token) error {
 	c.logger.Info("login password create")
 

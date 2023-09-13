@@ -13,6 +13,7 @@ import (
 	"time"
 )
 
+// CardUpdate - update card
 func (c Event) CardUpdate(name, passwordSecure, paymentSystem, number, holder, cvc, endDateCard string, token model.Token) error {
 	c.logger.Info("card update")
 

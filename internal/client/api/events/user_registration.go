@@ -7,6 +7,7 @@ import (
 	"best-goph-keeper/internal/server/service"
 )
 
+// Registration - user registration
 func (c Event) Registration(username, password string) (model.Token, error) {
 	c.logger.Info("registration")
 

@@ -20,6 +20,7 @@ func NewEvent(ctx context.Context, config *config.ConfigClient, log *logrus.Logg
 	return &Event{context: ctx, config: config, logger: log, grpc: client}
 }
 
+// GetConfig - returns config in string format
 func (s Event) GetConfig() *config.ConfigClient {
 	return s.config
 }

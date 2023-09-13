@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 )
 
+// Synchronization - run synchronization
 func (c Event) Synchronization(password string, token model.Token) ([][]string, [][]string, [][]string, [][]string, error) {
 	c.logger.Info("synchronization")
 
