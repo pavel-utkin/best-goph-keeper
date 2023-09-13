@@ -16,10 +16,11 @@ type DB struct {
 	Pool *sql.DB
 }
 
+// New - open connection with database
 func New(config *config.Config, log *logrus.Logger) (*DB, error) {
 	pool, err := sql.Open("postgres", config.DSN)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	log.Info("Connect to DB")

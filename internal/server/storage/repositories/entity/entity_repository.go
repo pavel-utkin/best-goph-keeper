@@ -3,9 +3,10 @@ package entity
 import (
 	"best-goph-keeper/internal/server/database"
 	"best-goph-keeper/internal/server/model"
-	"best-goph-keeper/internal/server/storage/errors"
+	custom_errors "best-goph-keeper/internal/server/storage/errors"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"time"
 )
 
@@ -45,8 +46,8 @@ func (e *Entity) GetList(userID int64, typeEntity string) ([]model.Entity, error
 		"where user_id = $1 and metadata->>'Type' = $2 and deleted_at IS NULL",
 		userID, typeEntity)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return entities, errors.ErrRecordNotFound
+		if errors.Is(err, sql.ErrNoRows) {
+			return entities, custom_errors.ErrRecordNotFound
 		} else {
 			return entities, err
 		}

@@ -48,6 +48,14 @@ func TestEvents(t *testing.T) {
 		t.Fatalf("Test containers failed: %v", err)
 	}
 
+	stopTime := time.Second
+	defer func() {
+		err = container.Stop(context.Background(), &stopTime)
+		if err != nil {
+			t.Fatalf("container stop failed: %v", err)
+		}
+	}()
+
 	databaseURI, err := container.ConnectionString(context.Background(), "sslmode=disable")
 	if err != nil {
 		t.Fatalf("container connection failed: %v", err)
@@ -386,10 +394,4 @@ func TestEvents(t *testing.T) {
 		_, _, _, _, err = client.Synchronization(password, accessToken)
 		assert.Error(t, err, "failed Synchronization")
 	})
-
-	stopTime := time.Second
-	err = container.Stop(context.Background(), &stopTime)
-	if err != nil {
-		t.Fatalf("container stop failed: %v", err)
-	}
 }

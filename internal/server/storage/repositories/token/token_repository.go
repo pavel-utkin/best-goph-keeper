@@ -5,8 +5,9 @@ import (
 	"best-goph-keeper/internal/client/storage/layouts"
 	"best-goph-keeper/internal/server/database"
 	"best-goph-keeper/internal/server/model"
-	"best-goph-keeper/internal/server/storage/errors"
+	custom_errors "best-goph-keeper/internal/server/storage/errors"
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -92,8 +93,8 @@ func (t *Token) GetList(userID int64) ([]model.Token, error) {
 		userID,
 	)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return tokens, errors.ErrRecordNotFound
+		if errors.Is(err, sql.ErrNoRows) {
+			return tokens, custom_errors.ErrRecordNotFound
 		} else {
 			return tokens, err
 		}

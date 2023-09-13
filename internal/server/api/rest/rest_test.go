@@ -53,6 +53,14 @@ func TestRest(t *testing.T) {
 		t.Fatalf("Test containers failed: %v", err)
 	}
 
+	stopTime := time.Second
+	defer func() {
+		err = container.Stop(context.Background(), &stopTime)
+		if err != nil {
+			t.Fatalf("container stop failed: %v", err)
+		}
+	}()
+
 	databaseURI, err := container.ConnectionString(context.Background(), "sslmode=disable")
 	if err != nil {
 		t.Fatalf("container connection failed: %v", err)
@@ -160,11 +168,5 @@ func TestRest(t *testing.T) {
 
 	if _, err := http.Get("http://" + serverCnfg.AddressREST + "/api/token/" + username); err != nil {
 		t.Errorf("http.Post : %v", err)
-	}
-
-	stopTime := time.Second
-	err = container.Stop(context.Background(), &stopTime)
-	if err != nil {
-		t.Fatalf("container stop failed: %v", err)
 	}
 }

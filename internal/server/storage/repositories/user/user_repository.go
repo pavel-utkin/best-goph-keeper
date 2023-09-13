@@ -3,8 +3,9 @@ package user
 import (
 	"best-goph-keeper/internal/server/database"
 	"best-goph-keeper/internal/server/model"
-	"best-goph-keeper/internal/server/storage/errors"
+	custom_errors "best-goph-keeper/internal/server/storage/errors"
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -45,8 +46,8 @@ func (u *User) Authentication(userRequest *model.UserRequest) (*model.User, erro
 		&authenticatedUser.Username,
 	)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrWrongUsernameOrPassword
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, custom_errors.ErrWrongUsernameOrPassword
 		} else {
 			return nil, err
 		}
@@ -67,8 +68,8 @@ func (u *User) UserList() ([]model.GetAllUsers, error) {
 	users := []model.GetAllUsers{}
 	rows, err := u.db.Pool.Query("SELECT username, deleted_at FROM users")
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return users, errors.ErrRecordNotFound
+		if errors.Is(err, sql.ErrNoRows) {
+			return users, custom_errors.ErrRecordNotFound
 		} else {
 			return users, err
 		}

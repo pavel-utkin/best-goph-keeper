@@ -50,6 +50,14 @@ func TestHandlers(t *testing.T) {
 		t.Fatalf("Test containers failed: %v", err)
 	}
 
+	stopTime := time.Second
+	defer func() {
+		err = container.Stop(context.Background(), &stopTime)
+		if err != nil {
+			t.Fatalf("container stop failed: %v", err)
+		}
+	}()
+
 	databaseURI, err := container.ConnectionString(context.Background(), "sslmode=disable")
 	if err != nil {
 		t.Fatalf("container connection failed: %v", err)
@@ -416,10 +424,4 @@ func TestHandlers(t *testing.T) {
 		authenticatedUser, err = handlerGrpc.Authentication(context.Background(), &grpcKeeper.AuthenticationRequest{Username: username, Password: password})
 		assert.Error(t, err, "authentication failed")
 	})
-
-	stopTime := time.Second
-	err = container.Stop(context.Background(), &stopTime)
-	if err != nil {
-		t.Fatalf("container stop failed: %v", err)
-	}
 }
